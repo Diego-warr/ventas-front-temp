@@ -1,0 +1,10 @@
+# verificando nvm
+command -v nvm
+
+# seleccionando nodejs 16.0.0
+nvm use 16.10.0
+
+# desintalando e instalando angular-cli @angular/cli@12.2.7
+npm uninstall -g @angular/cli
+npm install -g @angular/cli@12.2.7
+

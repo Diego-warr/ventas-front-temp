@@ -1,0 +1,140 @@
+<p-toast></p-toast>
+
+<p-table #dtgrupoart [value]="grupoArticuloList" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+    responsiveLayout="scroll" currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros."
+    [rowsPerPageOptions]="[10,25,50]" [rowHover]="true" [globalFilterFields]="['articuloId.articuloDescripcion','grupoPrecioId.descripcion','','','']">
+    <ng-template pTemplate="caption">
+        <div class="grid">
+            <div class="col-12 md:col-12 lg:col-12">
+                <div class="grid" fxLayout="row" fxLayoutAlign="space-between center">
+                    <div class="col-12 md:col-6 lg:col-3 flex">
+                        <input [(ngModel)]="filterName" [style]="{'width':'100%'}" pInputText type="text"
+                            (input)="filtrarGrupoArticulo($event , 'contains')" placeholder="Buscar por artículo y grupo precio..." />
+                    </div>
+                    <div class="col-12 md:col-6 lg:col-4 flex">
+                        <button pButton pRipple [style]="{'width':'100%'}" label="Nuevo Grupo de articulo"
+                            icon="pi pi-plus-circle" class="p-button-primary" (click)="openNew()">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th class="titleColumnTable" pSortableColumn="grupoPrecioId.descripcion">Grupo precio<p-sortIcon field="grupoPrecioId.descripcion"></p-sortIcon></th>
+            <th class="titleColumnTable" pSortableColumn="articuloId.articuloDescripcion">Articulo<p-sortIcon field="articuloId.articuloDescripcion"></p-sortIcon></th>
+            <th class="titleColumnTable" pSortableColumn="secuencia">Secuencia<p-sortIcon field="secuencia"></p-sortIcon></th>
+            <th class="titleColumnTable" pSortableColumn="factorxcalidad">Factor x calidad<p-sortIcon field="factorxcalidad"></p-sortIcon></th>
+            <th class="titleColumnTable" pSortableColumn="estado">Estado<p-sortIcon field="estado"></p-sortIcon></th>
+            <th class="titleColumnTable">Usuario Creación</th>
+            <th class="titleColumnTable">Usuario Modificación</th>
+            <th></th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-grupoArticulo>
+        <tr>
+            <td class="dataTable" *ngIf="grupoArticulo.grupoPrecioId.descripcion ? setearDescripcionGrupoPrecio(grupoArticulo.grupoPrecioId.descripcion) : null">
+                {{this.grupoPrecioDescripcionInTable}}</td>
+            <td class="dataTable">{{grupoArticulo.articuloId.articuloDescripcion}}</td>
+            <td class="dataTable">{{grupoArticulo.secuencia}}</td>
+            <td class="dataTable">{{grupoArticulo.factorxcalidad | currency:'':'S/. '}}</td>
+            <td class="dataTable">
+                <span>
+                    <div *ngIf="grupoArticulo.estado==1; else elseBlock" style="color: forestgreen;"
+                        class="font-size-status">Habilitado</div>
+                    <ng-template #elseBlock>
+                        <div style="color: #df2f2f;" class="font-size-status">Inhabilitado</div>
+                    </ng-template>
+                </span>
+            </td>
+            <td class="dataTable">{{grupoArticulo.usuarioCreacion}}
+                <br>
+                {{grupoArticulo.fechaCreacion | customDateTime}}
+            </td>
+            <td class="dataTable">{{grupoArticulo.usuarioModificacion}}
+                <br>
+                {{grupoArticulo.fechaModificacion | customDateTime}}
+            </td>
+            <td class="botones">
+                <button pButton pRipple icon="pi pi-pencil"
+                    class="p-button-rounded p-button-warning icon-action p-button-sm" pTooltip="Editar grupo precio"
+                    tooltipPosition="top" (click)="setEditGrupoArticulo(grupoArticulo)">
+                </button>
+                <button *ngIf="grupoArticulo.estado==1; else elseBlock1" pButton pRipple icon="pi pi-trash"
+                    class="p-button-rounded p-button-danger icon-action p-button-sm"
+                    (click)="deshabilitarGrupoArticulo(grupoArticulo)" pTooltip="Inhabilitar grupo artículo"
+                    tooltipPosition="top">
+                </button>
+                <ng-template #elseBlock1>
+                    <button pButton pRipple icon="pi pi-arrow-circle-up"
+                        class="p-button-rounded p-button-success icon-action "
+                        (click)="habilitarGrupoArticulo(grupoArticulo)" pTooltip="Habilitar grupo artículo"
+                        tooltipPosition="top"></button>
+                </ng-template>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+        <div class="p-d-flex p-ai-center p-jc-between">
+            Total: {{grupoArticuloList ? grupoArticuloList.length : 0}} Grupos de artículo.
+        </div>
+    </ng-template>
+</p-table>
+
+
+<p-dialog [(visible)]="grupoArticuloDialog" [style]="{width: '500px', height:'480px'}" [header]=titleDialog
+    [modal]="true" styleClass="p-fluid" [closable]="false">
+    <p></p>
+    <ng-template pTemplate="content">
+        <div class="grid">
+            <div class="col">
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="lineaNegocio">Grupo precio</label>
+                        <p-dropdown [options]="grupoPrecioList" [(ngModel)]="grupoPrecioSelected" [showClear]="true"
+                            placeholder="Seleccione grupo precio" optionLabel="descripcion" optionValue="grupoPrecioId"
+                            (onChange)="onChangeSelectGrupoPrecio($event)">
+                        </p-dropdown>
+                        <small class="p-error" *ngIf="!grupoPrecioSelected">campo requerido*</small>
+                    </div>
+                </div>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="lineaNegocio">Artículo</label>
+                        <p-dropdown class="p-select" [options]="productsList" [(ngModel)]="articuloSelected"
+                            placeholder="Seleccione artículo" optionLabel="descripcionArticulo" optionValue="articuloId"
+                            [showClear]="true" (onChange)="onChangeSelectArticulo($event)">
+                        </p-dropdown>
+                        <small class="p-error" *ngIf="!articuloSelected">campo requerido*</small>
+                    </div>
+                </div>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="apellidos">Secuencia</label>
+                        <input type="text" [(ngModel)]="secuenciaIngresada" pInputText id="" required />
+                        <small class="p-error" *ngIf="!secuenciaIngresada">campo requerido*</small>
+                    </div>
+                </div>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="">Factor x calidad</label>
+                        <p-inputNumber [(ngModel)]="factorXcalidadIngresada" id="" mode="currency" currency="PEN">
+                        </p-inputNumber>
+                        <small class="p-error" *ngIf="factorXcalidadIngresada==null">campo requerido*</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()">
+        </button>
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text"
+            (click)="createOrUpdateGrupoArticulo()" [disabled]="validOrInvalidBtn()">
+        </button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

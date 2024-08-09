@@ -1,0 +1,207 @@
+body {
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, “Segoe UI”, Roboto, Helvetica,
+    Arial, sans-serif, “Apple Color Emoji”, “Segoe UI Emoji”, “Segoe UI Symbol”;
+}
+
+td {
+  font-size: x-small;
+}
+
+input {
+  font-size: small;
+  width: 100%;
+}
+
+.divUno {
+  padding-bottom: 0rem;
+}
+
+.p-select {
+  width: 100%;
+  padding-right: 0rem;
+}
+
+p-cascadeSelect {
+  width: 100%;
+}
+
+.p-calendario {
+  width: 100%;
+}
+
+::ng-deep .p-datepicker table th {
+  padding: 0.5rem 0.2rem;
+}
+
+::ng-deep .p-datepicker table td {
+  padding: 0.1rem !important;
+}
+
+::ng-deep .p-datepicker table td > span {
+  width: 1.5rem;
+  height: 2.1rem;
+}
+
+::ng-deep .p-datepicker table {
+  font-size: 10pt;
+  margin: -0.143rem 0;
+}
+
+::ng-deep .p-datepicker .p-datepicker-header {
+  padding: 0rem;
+}
+
+.icon-action {
+  margin-right: 4px;
+}
+
+.barras {
+  size: 1.5rem;
+}
+
+.pi-bars:before {
+  font-size: medium;
+}
+
+.inputHoraEntrega {
+  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, “Segoe UI”, Roboto, Helvetica,
+    Arial, sans-serif, “Apple Color Emoji”, “Segoe UI Emoji”, “Segoe UI Symbol”;
+}
+
+.titleColumnTableOP {
+  color: #1780d7 !important;
+}
+
+.dataTableOP {
+  font-weight: bold;
+}
+
+:host ::ng-deep .pheader .p-dialog-footer {
+  padding-bottom: 0rem;
+}
+
+td {
+  padding-bottom: 0rem !important;
+  padding-right: 0rem !important;
+  padding-left: 0.3rem !important;
+  padding-top: 0rem !important;
+}
+
+:host ::ng-deep .pheader .p-dialog-header {
+  padding: 0.5rem 0 0 0;
+}
+
+:host ::ng-deep .pheader .p-dialog-content {
+  background-color: #f0f0f0 !important;
+}
+
+:host ::ng-deep .p-dialog-content {
+  padding: 0;
+}
+
+#contenido {
+  padding: 0 1.5rem 1rem 1.5rem;
+}
+
+#footerOP {
+  padding: 0.5rem 0.5rem 0 0.5rem;
+}
+
+.titlebuscarcliente {
+  padding: 0rem !important;
+}
+
+.btnField {
+  text-align: center !important;
+}
+
+.remopaddingtop {
+  padding-top: 0rem !important;
+}
+
+.remopaddingbotton {
+  padding-bottom: 0rem !important;
+}
+
+.btnFooter {
+  width: 100%;
+}
+
+.tbOP {
+  padding-bottom: 0rem;
+}
+
+:host ::ng-deep .tbOP .p-datatable-header {
+  padding-top: 0.3rem;
+  padding-bottom: 0rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  background-color: #e9e9e9;
+}
+
+.titleFields {
+  margin-bottom: 5px !important;
+  font-weight: bold !important;
+}
+
+:host ::ng-deep .pprogress .p-dialog-content {
+  padding: 0rem;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+:host ::ng-deep .inputLugarEntrega {
+  padding-bottom: 0rem;
+}
+
+.inputFilter {
+  font-size: 12px;
+}
+
+::ng-deep .p-dropdown .p-dropdown-trigger {
+  width: 1.5rem;
+}
+
+::ng-deep .p-dropdown .p-dropdown-label {
+  padding-right: 0rem;
+}
+
+.chkOG {
+  justify-content: center;
+}
+.total-row {
+  td {
+      padding: 8px 8px 8px 4px !important;
+    font-size: 14px;
+    font-weight: bold;
+  }
+}
+
+.footer-container-dialog-order {
+  padding: 8px 8px 8px 4px;
+}
+
+::ng-deep .p-dialog-footer {
+  // width: 100%;
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
+  padding: 8px 8px 8px 4px;
+  background-color: #f0f0f0;
+  box-shadow: 0px 6px 24px 0px rgba(67, 83, 117, 0.16) !important;
+  z-index: 1;
+}
+.casillero-container{
+  text-align: center;
+}
+.casillero-content{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

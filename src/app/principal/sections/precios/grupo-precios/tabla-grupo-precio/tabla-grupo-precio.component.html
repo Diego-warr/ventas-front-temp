@@ -1,0 +1,161 @@
+<p-toast></p-toast>
+
+<div class="card">
+    <p-table #dtgrupoprecio [value]="grupoPrecioList" [rows]="10" [paginator]="true" sortMode="multiple"
+        [globalFilterFields]="['zona.nombre','','','','','']" responsiveLayout="scroll" [loading]="loading"
+        [rowsPerPageOptions]="[10,25,30]" [rowHover]="true" dataKey="id"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros."
+        [showCurrentPageReport]="true">
+        <ng-template pTemplate="caption">
+            <div class="grid">
+                <div class="col-12 md:col-12 lg:col-12">
+                    <div class="grid" fxLayout="row" fxLayoutAlign="space-between center">
+                        <div class="col-12 md:col-6 lg:col-3 flex">
+                            <input [(ngModel)]="filterName" [style]="{'width':'100%'}" pInputText type="text"
+                                (input)="filtrarProductos($event , 'contains')" placeholder="Buscar por nombre..." />
+                        </div>
+                        <div class="col-12 md:col-6 lg:col-4 flex">
+                            <button pButton pRipple [style]="{'width':'100%'}" label="Nuevo grupo de precios"
+                                icon="pi pi-plus-circle" class="p-button-primary" (click)="openNew()">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="titleColumnTable" pSortableColumn="descripcion">Grupo precio <p-sortIcon field="descripcion"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="zona.nombre">Zona<p-sortIcon field="zona.nombre"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="lineaNegocio.lineaNegocioNombre">Linea de negocio <p-sortIcon
+                        field="lineaNegocio.lineaNegocioNombre"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="canalVenta.canalVentaDescripcion">Canal de venta <p-sortIcon
+                        field="canalVenta.canalVentaDescripcion"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="estado">Estado<p-sortIcon field="estado"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="usuarioCreacion">Creaci&oacute;n<p-sortIcon field="usuarioCreacion"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="usuarioModificacion">Modificaci&oacute;n<p-sortIcon field="usuarioModificacion">
+                    </p-sortIcon>
+                </th>
+                <th pSortableColumn=""></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-grupoPrecio>
+            <tr>
+                <td class="dataTable" *ngIf="grupoPrecio.descripcion ? setearDescripcionGrupoPrecio(grupoPrecio.descripcion) : null">
+                    {{this.descripcionInTable}}</td>
+                <td class="dataTable">{{grupoPrecio.zona.nombre.toUpperCase()}}</td>
+                <td class="dataTable">{{grupoPrecio.lineaNegocio.lineaNegocioNombre}}</td>
+                <td class="dataTable">{{grupoPrecio.canalVenta.canalVentaDescripcion}}</td>
+                <td class="dataTable">
+                    <span>
+                        <div *ngIf="grupoPrecio.estado==1; else elseBlock" style="color: forestgreen;"
+                            class="font-size-status">Habilitado</div>
+                        <ng-template #elseBlock>
+                            <div style="color: #df2f2f;" class="font-size-status">Inhabilitado</div>
+                        </ng-template>
+                    </span>
+                </td>
+                <td class="dataTable">{{grupoPrecio.usuarioCreacion}}
+                    <br>
+                    {{grupoPrecio.fechaCreacion | customDateTime}}
+                </td>
+                <td class="dataTable">{{grupoPrecio.usuarioModificacion}}
+                    <br>
+                    {{grupoPrecio.fechaModificacion | customDateTime}}
+                </td>
+                <td class="botones">
+                    <button pButton pRipple icon="pi pi-pencil"
+                        class="p-button-rounded p-button-warning icon-action p-button-sm" pTooltip="Editar grupo precio"
+                        tooltipPosition="top" (click)="setEditGrupoPrecio(grupoPrecio)">
+                    </button>
+                    <button *ngIf="grupoPrecio.estado==1; else elseBlock1" pButton pRipple icon="pi pi-trash"
+                        class="p-button-rounded p-button-danger icon-action p-button-sm"
+                        (click)="deshabilitarGrupoPrecio(grupoPrecio)" pTooltip="Inhabilitar grupo precio"
+                        tooltipPosition="top">
+                    </button>
+                    <ng-template #elseBlock1>
+                        <button pButton pRipple icon="pi pi-arrow-circle-up"
+                                class="p-button-rounded p-button-success icon-action "
+                                (click)="habilitarGrupoPrecio(grupoPrecio)"
+                                pTooltip="Habilitar grupo precio"
+                                tooltipPosition="top"
+                        ></button>
+                    </ng-template>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="flex align-items-center justify-content-between">
+                Total: {{grupoPrecioList ? grupoPrecioList.length : 0}} Grupos precio.
+            </div>
+        </ng-template>
+    </p-table>
+</div>
+
+
+<p-dialog [(visible)]="grupoPrecioDialog" [style]="{width: '500px'}" [header]=titleDialog [modal]="true"
+    styleClass="p-fluid" [closable]="false">
+    <ng-template pTemplate="content">
+
+        <div class="grid">
+            <div class="col">
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="lineaNegocio">Linea de negocio</label>
+                        <p-dropdown [options]="lineasNegocio" optionLabel="lineaNegocioNombre"
+                            optionValue="lineaNegocioId" placeholder="Seleccionar linea de negocio"
+                            [(ngModel)]="lineaNegocioSelected" [showClear]="true"
+                            (ngModelChange)="onChangeLineaNegocio($event)">
+                        </p-dropdown>
+                        <small class="p-error" *ngIf="!lineaNegocioSelected">campo requerido*</small>
+                    </div>
+                </div>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="canalVenta">Canal de venta</label>
+                        <p-dropdown [options]="canalesVenta" optionLabel="canalVentaDescripcion"
+                            optionValue="canalVentaId" placeholder="Seleccionar canal de venta"
+                            [(ngModel)]="canalVentaSelected" [showClear]="true"
+                            (ngModelChange)="onChangeCanalVenta($event)">
+                        </p-dropdown>
+                        <small class="p-error" *ngIf="!canalVentaSelected">campo requerido*</small>
+                    </div>
+                </div>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="">Zona</label>
+                        <p-dropdown [options]="zonaList" optionLabel="nombre" optionValue="zonaId"
+                            placeholder="Seleccionar zona" [(ngModel)]="zonaSelected" [showClear]="true"
+                            (ngModelChange)="onChangeZona($event)">
+                        </p-dropdown>
+                        <small class="p-error" *ngIf="!zonaSelected">campo requerido*</small>
+                    </div>
+                </div>
+                <p></p>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="">Descripci&oacute;n</label>
+                        <input type="text" [(ngModel)]="descripcion" pInputText id="" required />
+                        <small class="p-error" *ngIf="!descripcion">campo requerido*</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()">
+        </button>
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text"
+            (click)="createOrUpdateGrupoPrecio()" [disabled]="validOrInvalidBtn()">
+        </button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

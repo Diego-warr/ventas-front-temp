@@ -1,0 +1,127 @@
+<p-toast></p-toast>
+
+<div class="card">
+    <p-table #dtzonas [value]="zonaList" [rows]="10" [paginator]="true" sortMode="multiple"
+        [globalFilterFields]="['nombre','','','','','']" responsiveLayout="scroll" [loading]="loading"
+        [rowsPerPageOptions]="[10,25,30]" [rowHover]="true" dataKey="id"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros."
+        [showCurrentPageReport]="true">
+        <ng-template pTemplate="caption">
+            <div class="grid">
+                <div class="col-12 md:col-12 lg:col-12">
+                    <div class="grid" fxLayout="row" fxLayoutAlign="space-between center">
+                        <div class="col-12 md:col-6 lg:col-3 flex">
+                            <input [(ngModel)]="filterName" [style]="{'width':'100%'}" pInputText type="text"
+                                (input)="filtrarZonas($event , 'contains')" placeholder="Buscar por nombre de la zona" />
+                        </div>
+                        <div class="col-12 md:col-6 lg:col-3 flex">
+                            <button pButton pRipple [style]="{'width':'100%'}" label="Nueva zona"
+                                icon="pi pi-plus-circle" class="p-button-primary" (click)="openNew()">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="titleColumnTable" pSortableColumn="nombre">Nombre<p-sortIcon field="nombre"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="secuencia">Secuencia<p-sortIcon field="secuencia"></p-sortIcon></th>
+                <th class="titleColumnTable" pSortableColumn="estado">Estado<p-sortIcon field="estado"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="usuarioCreacion">Creaci&oacute;n<p-sortIcon field="usuarioCreacion"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="usuarioModificacion">Modificaci&oacute;n<p-sortIcon field="usuarioModificacion">
+                    </p-sortIcon>
+                </th>
+                <th pSortableColumn=""></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-zona>
+            <tr>
+                <td class="dataTable">{{zona.nombre}}</td>
+                <td class="dataTable">{{zona.secuencia}}</td>
+                <td class="dataTable">
+                    <span>
+                        <div *ngIf="zona.estado==1; else elseBlock" style="color: forestgreen;"
+                            class="font-size-status">Habilitado</div>
+                        <ng-template #elseBlock>
+                            <div style="color: #df2f2f;" class="font-size-status">Inhabilitado</div>
+                        </ng-template>
+                    </span>
+                </td>
+                <td class="dataTable">{{zona.usuarioCreacion}}
+                    <br>
+                    {{zona.fechaCreacion | customDateTime}}
+                </td>
+                <td class="dataTable">{{zona.usuarioModificacion}}
+                    <br>
+                    {{zona.fechaModificacion | customDateTime}}
+                </td>
+                <td class="botones">
+                    <button pButton pRipple icon="pi pi-pencil"
+                        class="p-button-rounded p-button-warning icon-action p-button-sm" pTooltip="Editar zona"
+                        tooltipPosition="top" (click)="setEditZona(zona)">
+                    </button>
+                    <button *ngIf="zona.estado==1; else elseBlock1" pButton pRipple icon="pi pi-trash"
+                        class="p-button-rounded p-button-danger icon-action p-button-sm"
+                        (click)="deshabilitarZona(zona)" pTooltip="Inhabilitar zona"
+                        tooltipPosition="top">
+                    </button>
+                    <ng-template #elseBlock1>
+                        <button pButton pRipple icon="pi pi-arrow-circle-up"
+                                class="p-button-rounded p-button-success icon-action "
+                                (click)="habilitarZona(zona)"
+                                pTooltip="Habilitar zona"
+                                tooltipPosition="top"
+                        ></button>
+                    </ng-template>
+                </td>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="flex align-items-center justify-content-between">
+                Total: {{zonaList ? zonaList.length : 0}} Zonas.
+            </div>
+        </ng-template>
+    </p-table>
+</div>
+
+
+<p-dialog [(visible)]="zonasDialog" [style]="{width: '500px'}" [header]=titleDialog [modal]="true" styleClass="p-fluid"
+    [closable]="false">
+    <ng-template pTemplate="content">
+        <br>
+        <br>
+        <div class="grid">
+            <div class="col">
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="">Nueva zona</label>
+                        <input type="text" [(ngModel)]="nombreZona" pInputText id="" required autofocus />
+                        <small class="p-error" *ngIf="!nombreZona">campo requerido*</small>
+                    </div>
+                </div>
+                <p></p>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="secuencia">Secuencia</label>
+                        <p-inputNumber placeholder="Ingrese la secuencia(orden) de la zona" [(ngModel)]="secuenciaZona">
+                        </p-inputNumber>
+                        <small class="p-error" *ngIf="!secuenciaZona">campo requerido*</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()">
+        </button>
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" (click)="createOrUpdateZona()"
+            [disabled]="validOrInvalidBtn(nombreZona, secuenciaZona!)">
+        </button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

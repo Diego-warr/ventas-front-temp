@@ -1,0 +1,20 @@
+<agm-map #map
+    [style]="{ width: '100%', height: '100%' }"
+    [latitude]="lat"
+    [longitude]="lon"
+    [zoom]="zoom"
+    [fullscreenControl]="true"
+    [fullscreenControl]="true"
+    [streetViewControl]="true"
+    [mapTypeControl]="true"
+    (mapClick)="mapClick()">
+    <agm-marker-cluster imagePath="assets/img/maps/cluster" imageExtension="svg">
+            <agm-marker  *ngFor="let marker of arrayMarkers"
+                [latitude]="marker.latitud" [longitude]="marker.longitud" (markerClick)=markerClick(infoWindow)>
+                      <agm-info-window #infoWindow>
+                        <p><b>Vendedor:</b> {{ marker.vendedorNombre }}</p>
+                        <p><b>&Uacute;ltima actualizaci&oacute;n:</b> {{ marker.timestamp }}</p>
+                      </agm-info-window>
+            </agm-marker>
+    </agm-marker-cluster>
+</agm-map>

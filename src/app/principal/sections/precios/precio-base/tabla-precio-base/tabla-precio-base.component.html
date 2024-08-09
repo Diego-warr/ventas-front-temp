@@ -1,0 +1,155 @@
+<p-toast></p-toast>
+
+<p-table #dtpreciobase [value]="precioBaseList" [rows]="10" [paginator]="true" sortMode="multiple"
+    [globalFilterFields]="['monto','fechaInicial','fechaFinal','grupoPrecioId.descripcion','','']"
+    responsiveLayout="scroll" [rowsPerPageOptions]="[10,25,30]" [rowHover]="true" dataKey="id"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros." [showCurrentPageReport]="true">
+    <ng-template pTemplate="caption">
+        <div class="grid">
+            <div class="col-12 md:col-12 lg:col-12">
+                <div class="grid">
+                    <div class="col-12 md:col-6 lg:col-3 flex">
+                        <input [(ngModel)]="filterName" [style]="{'width':'100%'}" pInputText type="text"
+                            (input)="filtrarPrecioBase($event , 'contains')"
+                            placeholder="Buscar por cualquier campo..." />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th class="titleColumnTable" pSortableColumn="monto">Monto <p-sortIcon field="monto"></p-sortIcon>
+            </th>
+            <th class="titleColumnTable" pSortableColumn="fechaInicial">Fecha inicial<p-sortIcon field="fechaInicial"></p-sortIcon>
+            </th>
+            <th class="titleColumnTable" pSortableColumn="fechaFinal">Fecha final<p-sortIcon field="fechaFinal"></p-sortIcon>
+            </th>
+            <th class="titleColumnTable" pSortableColumn="grupoPrecioId.descripcion">Grupo precio<p-sortIcon field="grupoPrecioId.descripcion">
+                </p-sortIcon>
+            </th>
+            <th class="titleColumnTable" pSortableColumn="estado">Estado<p-sortIcon field="estado"></p-sortIcon>
+            </th>
+            <th class="titleColumnTable" pSortableColumn="fechaCreacion">Creaci&oacute;n<p-sortIcon field="fechaCreacion"></p-sortIcon>
+            </th>
+            <th class="titleColumnTable" pSortableColumn="fechaModificacion">Modificaci&oacute;n<p-sortIcon field="fechaModificacion">
+                </p-sortIcon>
+            </th>
+            <th></th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-precioBase>
+        <tr>
+            <td class="dataTable">{{precioBase.monto | currency:'':'S/. '}}</td>
+            <td class="dataTable">{{precioBase.fechaInicial | customDate}}</td>
+            <td class="dataTable">{{precioBase.fechaFinal | customDate}}</td>
+            <td class="dataTable">{{precioBase.grupoPrecioId.descripcion}}</td>
+            <td class="dataTable">
+                <span>
+                    <div *ngIf="precioBase.estado==1; else elseBlock" style="color: forestgreen;"
+                        class="font-size-status">Habilitado</div>
+                    <ng-template #elseBlock>
+                        <div style="color: #df2f2f;" class="font-size-status">Inhabilitado</div>
+                    </ng-template>
+                </span>
+            </td>
+            <td class="dataTable">{{precioBase.usuarioCreacion}}
+                <br>
+                {{precioBase.fechaCreacion | customDateTime}}
+            </td>
+            <td class="dataTable">{{precioBase.usuarioModificacion}}
+                <br>
+                {{precioBase.fechaModificacion | customDateTime}}
+            </td>
+            <td class="botones dataTable">
+                <button pButton pRipple icon="pi pi-pencil"
+                    class="p-button-rounded p-button-warning icon-action p-button-sm" pTooltip="Editar precio base"
+                    tooltipPosition="top" (click)="setEditPrecioBase(precioBase)">
+                </button>
+                <button *ngIf="precioBase.estado==1; else elseBlock1" pButton pRipple icon="pi pi-trash"
+                    class="p-button-rounded p-button-danger icon-action p-button-sm" (click)="deshabilitar(precioBase)"
+                    pTooltip="Inhabilitar precio base" tooltipPosition="top">
+                </button>
+                <ng-template #elseBlock1>
+                    <button pButton pRipple icon="pi pi-arrow-circle-up"
+                        class="p-button-rounded p-button-success icon-action " (click)="habilitar(precioBase)"
+                        pTooltip="Habilitar precio base" tooltipPosition="top"></button>
+                </ng-template>
+            </td>
+    </ng-template>
+    <ng-template pTemplate="summary">
+        <div class="flex align-items-center justify-content-between">
+            Total: {{precioBaseList ? precioBaseList.length : 0 }} Precios base.
+        </div>
+    </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="precioBaseDialog" [style]="{width: '550px', height:'650px'}" [header]=titleDialog [modal]="true"
+    styleClass="p-fluid" [closable]="false">
+    <p></p>
+    <ng-template pTemplate="content">
+        <div class="grid">
+            <div class="col">
+                <br>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="dateInicial">Fecha incial</label>
+                        <p-calendar [(ngModel)]="dateInicial" [styleClass]="'custom-height'" dateFormat="dd/mm/yy"
+                            [showIcon]="true" inputId="dateInicial" [readonlyInput]="true">
+                        </p-calendar>
+                        <small class="p-error" *ngIf="!dateInicial">campo requerido*</small><br>
+                        <small class="p-error" *ngIf="validarFechaInicial(dateInicial)==true">Fecha inicial no puede ser
+                            menor a
+                            hoy*</small>
+                    </div>
+                </div>
+                <br>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="dateFinal">Fecha final</label>
+                        <p-calendar [(ngModel)]="dateFinal" [styleClass]="'custom-height'" dateFormat="dd/mm/yy"
+                            [showIcon]="true" inputId="dateFinal" [readonlyInput]="true">
+                        </p-calendar>
+                        <small class="p-error" *ngIf="!dateFinal">campo requerido*</small><br>
+                        <small class="p-error" *ngIf="validarFechaFinal(dateFinal)==true">Fecha final no puede ser menor
+                            a
+                            hoy*</small><br>
+                        <small class="p-error" *ngIf="validarRangoFechas(dateInicial, dateFinal)==true">Fechas fuera de
+                            rango*</small>
+                    </div>
+                </div>
+                <br>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="">Monto</label>
+                        <p-inputNumber [(ngModel)]="montoIngresado" id="" mode="currency" currency="PEN">
+                        </p-inputNumber>
+                        <small class="p-error" *ngIf="!montoIngresado">campo requerido*</small>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="lineaNegocio">Grupo precio</label>
+                        <p-dropdown [options]="grupoPrecioList" [(ngModel)]="grupoPrecioSelected" [showClear]="true"
+                            placeholder="Seleccione grupo precio" optionLabel="descripcion" optionValue="grupoPrecioId">
+                        </p-dropdown>
+                        <small class="p-error" *ngIf="!grupoPrecioSelected">campo requerido*</small>
+                    </div>
+                </div>
+                <br>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()">
+        </button>
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text"
+            (click)="createOrUpdatePrecioBase()" [disabled]="validOrInvalidBtn()">
+        </button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

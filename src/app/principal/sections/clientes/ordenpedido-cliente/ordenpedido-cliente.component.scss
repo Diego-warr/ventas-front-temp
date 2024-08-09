@@ -1,0 +1,29 @@
+.nodata {
+    text-align: center !important;
+}
+
+input {
+    font-size: small;
+    width: 100%;
+}
+
+.p-select{
+    width: 100%;
+}
+
+.p-calendario{
+    width: 100%;
+}
+
+.btnSearch {
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+::ng-deep .p-datepicker table td {
+    padding: 0.1rem !important;
+}
+
+.titleColumnTableOP {
+    color: #1780d7 !important;
+}

@@ -1,0 +1,149 @@
+<p-toast></p-toast>
+
+<div class="card">
+    <p-table #dtplantilla [value]="plantillaPrecioList" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+        responsiveLayout="scroll" currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros."
+        [rowsPerPageOptions]="[10,25,50]" [rowHover]="true" [globalFilterFields]="['grupoPrecioId.descripcion','valorMinimo','valorMaximo','factorXcantidad','']">
+        <ng-template pTemplate="caption">
+            <div class="grid">
+                <div class="col-12 md:col-12 lg:col-12">
+                    <div class="grid" fxLayout="row" fxLayoutAlign="space-between center">
+                        <div class="col-12 md:col-6 lg:col-3 flex">
+                            <input [(ngModel)]="filterName" [style]="{'width':'100%'}" pInputText type="text"
+                                (input)="filtrarPlantillaPrecio($event , 'contains')" placeholder="cualquier campo..." />
+                        </div>
+                        <div class="col-12 md:col-6 lg:col-4 flex">
+                            <button pButton pRipple [style]="{'width':'100%'}" label="Nueva plantilla de precio"
+                                icon="pi pi-plus-circle" class="p-button-primary" (click)="openNew()">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="titleColumnTable" pSortableColumn="grupoPrecioId.descripcion">Grupo precio<p-sortIcon
+                        field="grupoPrecioId.descripcion"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="valorMinimo">Valor m&iacute;nimo<p-sortIcon field="valorMinimo"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="valorMaximo">Valor m&aacute;ximo<p-sortIcon field="valorMaximo"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="factorXcantidad">Factor por cantidad<p-sortIcon field="factorXcantidad">
+                    </p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="estado">Estado<p-sortIcon field="estado"></p-sortIcon></th>
+                <th class="titleColumnTable" pSortableColumn="fechaCreacion">Creaci&oacute;n<p-sortIcon field="fechaCreacion"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="fechaModificacion">Modificación<p-sortIcon field="fechaModificacion"></p-sortIcon>
+                </th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-plantilla>
+            <tr>
+                <td class="dataTable">{{plantilla.grupoPrecioId.descripcion}}</td>
+                <td class="dataTable">{{plantilla.valorMinimo}}</td>
+                <td class="dataTable">{{plantilla.valorMaximo}}</td>
+                <td class="dataTable">{{plantilla.factorXcantidad | currency:'':'S/. '}}</td>
+                <td class="dataTable">
+                    <span>
+                        <div *ngIf="plantilla.estado==1; else elseBlock" style="color: forestgreen;"
+                            class="font-size-status">Habilitado</div>
+                        <ng-template #elseBlock>
+                            <div style="color: #df2f2f;" class="font-size-status">Inhabilitado</div>
+                        </ng-template>
+                    </span>
+                </td>
+                <td class="dataTable">{{plantilla.usuarioCreacion}}
+                    <br>
+                    {{plantilla.fechaCreacion | customDateTime}}
+                </td>
+                <td class="dataTable">{{plantilla.usuarioModificacion}}
+                    <br>
+                    {{plantilla.fechaModificacion | customDateTime}}
+                </td>
+                <td class="botones">
+                    <button pButton pRipple icon="pi pi-pencil"
+                        class="p-button-rounded p-button-warning icon-action p-button-sm" pTooltip="Editar plantilla de precio"
+                        tooltipPosition="top" (click)="setEditPlantilla(plantilla)">
+                    </button>
+                    <button *ngIf="plantilla.estado==1; else elseBlock1" pButton pRipple icon="pi pi-trash"
+                        class="p-button-rounded p-button-danger icon-action p-button-sm"
+                        (click)="deshabilitar(plantilla)" pTooltip="Inhabilitar plantilla de precio"
+                        tooltipPosition="top">
+                    </button>
+                    <ng-template #elseBlock1>
+                        <button pButton pRipple icon="pi pi-arrow-circle-up"
+                            class="p-button-rounded p-button-success icon-action"
+                            (click)="habilitar(plantilla)" pTooltip="Habilitar plantilla de precio"
+                            tooltipPosition="top"></button>
+                    </ng-template>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="p-d-flex p-ai-center p-jc-between">
+                Total: {{plantillaPrecioList ? plantillaPrecioList.length : 0}} Plantillas de precios.
+            </div>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [(visible)]="plantillaDialog" [style]="{width: '600px'}" [header]=titleDialog [modal]="true"
+    styleClass="p-fluid" [closable]="false">
+    <ng-template pTemplate="content">
+        <br>
+        <br>
+        <div class="grid">
+            <div class="col">
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="grupoPrecio">Grupos de precio</label>
+                        <p-dropdown [options]="grupoPreciosList" optionLabel="descripcion" optionValue="grupoPrecioId"
+                            [(ngModel)]="selectedGrupoPrecio" placeholder="Seleccione un grupo precio"
+                            (ngModelChange)="onChangeGrupoPrecio($event)">
+                        </p-dropdown>
+                        <small class="p-error" *ngIf="!selectedGrupoPrecio">campo requerido*</small>
+                    </div>
+                </div>
+                <p></p>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="">Rango m&iacute;nimo</label>
+                        <input type="text" [(ngModel)]="valMinimoIngresado" pInputText id="" required />
+                        <small class="p-error" *ngIf="">campo requerido*</small>
+                    </div>
+                </div>
+                <p></p>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="">Rango m&aacute;ximo</label>
+                        <input type="text" [(ngModel)]="valMaximoIngresado" pInputText id="" required />
+                        <small class="p-error" *ngIf="">campo requerido*</small>
+                    </div>
+                </div>
+                <p></p>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="">Factor por cantidad</label>
+                        <p-inputNumber placeholder="Ingrese el factor por cantidad en soles" pTooltip="factor por cantidad se suma al precio base " [(ngModel)]="factXcantidadaIngresado" id="" mode="currency" currency="PEN"></p-inputNumber>
+                        <small class="p-error" *ngIf="">campo requerido*</small>
+                    </div>
+                </div>
+                <p></p>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()">
+        </button>
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" (click)="createOrUpdatePlantilla()"
+            [disabled]="validOrInvalidBtn()">
+        </button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

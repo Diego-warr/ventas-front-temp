@@ -1,0 +1,78 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body {
+  font-family: Lato, "Helvetica Neue", sans-serif !important;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Lato, "Helvetica Neue", sans-serif !important;
+  padding: 0;
+}
+
+* {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.hide {
+  display: none !important;
+}
+
+.p-component {
+  font-size: 1em !important;
+  font-weight: normal;
+}
+
+.mat-body, .mat-body-1, .mat-typography {
+  font: 400 13px/16px "Lato", "Helvetica Neue", sans-serif !important;
+  letter-spacing: normal;
+}
+
+th {
+  font-family: "Lato", sans-serif !important;
+}
+
+td {
+  font-family: "Lato", sans-serif !important;
+  font-size: small;
+}
+
+.p-menuitem-text, .p-panel-title {
+  font-size: 1.1em !important;
+}
+
+.p-link, .p-element {
+  font-size: 1em !important;
+}
+
+.p-panel .p-panel-content {
+  padding: 1em;
+}
+
+.sub-title {
+  font-family: "Lato", sans-serif !important;
+}
+
+.elevation-3 {
+  box-shadow: 0 10px 20px 3px rgb(0 0 0 / 19%), 0 6px 6px rgb(0 0 0 / 23%);
+}
+
+.image-head {
+  border-radius: 10px !important;
+}
+
+.mat-drawer.mat-drawer-side {
+  z-index: 1 !important;
+}
+
+.external-text-link {
+  font-size: 11px !important;
+  margin-left: 5px !important;
+}
+
+/* Importing Bootstrap SCSS file. */
+@import '~bootstrap/scss/bootstrap';

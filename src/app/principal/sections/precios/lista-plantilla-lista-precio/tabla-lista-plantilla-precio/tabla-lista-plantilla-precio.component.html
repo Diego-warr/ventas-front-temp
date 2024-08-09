@@ -1,0 +1,56 @@
+<div class="card">
+    <p-table [value]="plantillaPreciosList" [rows]="10" [paginator]="true" sortMode="multiple"
+        [globalFilterFields]="['nombre','','','','','']" responsiveLayout="scroll"
+        [rowsPerPageOptions]="[10,25,30]" [rowHover]="true" dataKey="id"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros."
+        [showCurrentPageReport]="true">
+        <ng-template pTemplate="caption">
+            <div class="grid">
+                <div class="col-12 md:col-12 lg:col-12">
+                    <div class="grid" fxLayout="row" fxLayoutAlign="space-between center">
+                        <div class="col-12 md:col-6 lg:col-3 flex">
+                            <input [style]="{'width':'100%'}" pInputText type="text" placeholder="Buscar por linea-canal" />
+                        </div>
+                        <div class="col-12 md:col-6 lg:col-3 flex">
+                            <button pButton pRipple [style]="{'width':'100%'}" label="Nueva Plantilla de precios"
+                                icon="pi pi-plus-circle" class="p-button-primary" (click)="irVistaNuevaPlantillaListaPrecios()">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="titleColumnTable">Linea negocio-Canal venta</th>
+                <th class="titleColumnTable">Fecha Inicial</th>
+                <th class="titleColumnTable">Fecha Final</th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-plantilla>
+            <tr>
+                <td class="dataTable"><b>{{plantilla.descripcion}}</b></td>
+                <td class="dataTable">{{plantilla.fechaInicio}}</td>
+                <td class="dataTable">{{plantilla.fechaFin}}</td>
+                <td class="botones">
+                    <button pButton pRipple icon="pi pi-eye"
+                        class="p-button-rounded p-button-secondary icon-action p-button-sm"
+                        pTooltip="Ver lista precio"
+                        tooltipPosition="top"
+                        (click)="irVistaInformacionListaPrecios(plantilla)">
+                    </button>
+                    <button pButton pRipple icon="pi pi-trash"
+                        class="p-button-rounded p-button-danger icon-action p-button-sm"
+                        pTooltip="Inhabilitar Lista precio"
+                        tooltipPosition="top">
+                    </button>
+                </td>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="flex align-items-center justify-content-between">
+                Total: {{plantillaPreciosList ? plantillaPreciosList.length : 0}} Listas de precios.
+            </div>
+        </ng-template>
+    </p-table>
+</div>

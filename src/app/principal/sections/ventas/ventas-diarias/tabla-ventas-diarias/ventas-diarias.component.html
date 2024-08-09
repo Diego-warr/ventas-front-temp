@@ -1,0 +1,292 @@
+<div class="card">
+  <p-table
+    #dtrepventa
+    [value]="documentsList"
+    [rows]="size"
+    sortMode="multiple"
+    [globalFilterFields]="[
+      'fechaEmision',
+      'glosa2',
+      'guiaRemision',
+      'cliente.tipoDocumentoIdentidadId.tipoDocIdentidadNombreCorto',
+      'cliente.clienteRazonSocial',
+      'clienteDestino.clienteRazonSocial',
+      'importe',
+      'saldo',
+      'canalventaId.canalVentaDescripcion',
+      'situacion'
+    ]"
+    [rowHover]="true"
+    selectionMode="single"
+    [(selection)]="selectedComprobante"
+    responsiveLayout="scroll"
+    dataKey="glosa2"
+    [scrollable]="true"
+    responsiveLayout="scroll"
+    [loading]="loadingDocuments"
+    [totalRecords]="totalElements"
+    [pageLinks]="totalPages"
+    [showPageLinks]="true"
+    [first]="page"
+    [showCurrentPageReport]="true"
+  >
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="19" class="nodata">No hay comprobantes que mostrar.</td>
+    </tr>
+  </ng-template>
+
+    <ng-template pTemplate="caption">
+        <div class="grid">
+          <div class="col-12 md:col-12 lg:col-4">
+            <div class="grid">
+              <div class="col-12 md:col-6 lg:col-5 flex">
+                <p-dropdown
+                  class="p-select"
+                  [style]="{ width: '100%' }"
+                  placeholder="Filtrar por:"
+                  [options]="filtroSelect"
+                  [(ngModel)]="indexSelected"
+                  optionLabel="label"
+                  optionValue="id"
+                  (onChange)="onChangeFiltroSelect($event)"
+                >
+                </p-dropdown>
+              </div>
+              <div class="col-12 md:col-6 lg:col-6 flex">
+                <input
+                  [(ngModel)]="filterName"
+                  pInputText
+                  type="text"
+                  placeholder="datos a buscar..."
+                  [disabled]="inputFiltroDisabled()"
+                />
+              </div>
+              <div class="col-12 md:col-2 lg:col-1 flex btnSearch">
+                <button
+                  pButton
+                  pRipple
+                  label=""
+                  icon="pi pi-search"
+                  class="p-button-primary p-mr-2"
+                  (click)="buscarComprobantes(filterName, index, 0, size, $event)"
+                  [disabled]="btnBuscarDisabled()"
+                ></button>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 md:col-12 lg:col-6">
+            <div class="grid">
+              <div class="col-12 md:col-6 flex">
+                <p-calendar
+                  #dateIni
+                  class="p-calendario"
+                  [style]="{ width: '100%' }"
+                  [(ngModel)]="dateInicial"
+                  (showClear)="(true)"
+                  placeholder="Seleccione fecha inicial"
+                  (onSelect)="onSelectedDates()"
+                  dateFormat="dd/mm/yy"
+                  [showIcon]="true"
+                  inputId="icon"
+                ></p-calendar>
+              </div>
+              <div class="col-12 md:col-6 flex">
+                <p-calendar
+                  #dateFin
+                  class="p-calendario"
+                  [style]="{ width: '100%' }"
+                  [(ngModel)]="dateFinal"
+                  (showClear)="(true)"
+                  placeholder="Seleccione fecha final"
+                  (onSelect)="onSelectedDates()"
+                  dateFormat="dd/mm/yy"
+                  [showIcon]="true"
+                  inputId="icon"
+                ></p-calendar>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 md:col-6 lg:col-2">
+            <div class="grid">
+              <div class="col-12 md:col-5 lg:col-3 flex">
+                <button
+                  pButton
+                  label="Clear"
+                  class="p-button-outlined"
+                  icon="pi pi-filter-slash"
+                  (click)="clearFiltersComprobantes(dtrepventa)"
+                ></button>
+              </div>
+              <div class="col-12 md:col-2 lg:col-6 flex">
+                <i
+                  *ngIf="spinnerOn == false; else elseSpinner"
+                  pButton
+                  pRipple
+                  icon="pi pi-spinner"
+                  style="font-size: 1rem"
+                  class="p-button-rounded p-button-primary"
+                  (click)="reloadDocuments(dtrepventa)"
+                  pTooltip="Actualizar lista de comprobates"
+                  tooltipPosition="top"
+                >
+                </i>
+                <ng-template #elseSpinner>
+                  <p-progressSpinner
+                    [style]="{ width: '30px', height: '30px' }"
+                    styleClass="custom-spinner"
+                    strokeWidth="8"
+                    fill="var(--surface-ground)"
+                    animationDuration=".5s"
+                  ></p-progressSpinner>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="titleColumnTable" pSortableColumn="semana">
+          Sm<p-sortIcon field="semana"></p-sortIcon>
+        </th>
+        <th class="titleColumnTable" pSortableColumn="fechaEmision">
+          Fecha<p-sortIcon field="fechaEmision"></p-sortIcon>
+        </th>
+        <th class="titleColumnTable" pSortableColumn="numero">
+          N&uacute;mero<p-sortIcon field="numero"></p-sortIcon>
+        </th>
+        <th style="width: 150px !important;"  class="titleColumnTable" pSortableColumn="guiaRemision">
+          Gu&iacute;a remisi&oacute;n <p-sortIcon field="guiaRemision"></p-sortIcon>
+        </th>
+        <th style="width: 150px !important;"  class="titleColumnTable" pSortableColumn="cliente.tipoDocumentoIdentidadId.tipoDocIdentidadNombreCorto">
+          Ruc/Dni<p-sortIcon field="cliente.tipoDocumentoIdentidadId.tipoDocIdentidadNombreCorto"></p-sortIcon>
+        </th>
+        <th style="width: 150px !important;" 
+          class="titleColumnTable" pSortableColumn="cliente.clienteRazonSocial">
+          Cliente comprob.<p-sortIcon field="cliente.clienteRazonSocial"></p-sortIcon>
+        </th>
+        <th style="width: 150px !important;"
+          class="titleColumnTable" pSortableColumn="clienteDestino.clienteRazonSocial">
+          Cliente real<p-sortIcon field="clienteDestino.clienteRazonSocial"></p-sortIcon>
+        </th>
+        <th class="titleColumnTable" pSortableColumn="">
+          Moneda <p-sortIcon field=""></p-sortIcon>
+        </th>
+        <th class="titleColumnTable" pSortableColumn="opgratuitas">
+          Gratuitas <p-sortIcon field="opgratuitas"></p-sortIcon>
+        </th>
+        <th class="titleColumnTable" pSortableColumn="importe">
+          Importe<p-sortIcon field="importe"></p-sortIcon>
+        </th>
+        <th class="titleColumnTable" pSortableColumn="saldo">
+          Saldo<p-sortIcon field="saldo"></p-sortIcon>
+        </th>
+        <th
+          class="titleColumnTable" pSortableColumn="canalventaId.canalVentaDescripcion">
+          Canal venta<p-sortIcon field="canalventaId.canalVentaDescripcion"></p-sortIcon>
+        </th>
+        <th class="titleColumnTable" pSortableColumn="situacion">
+          Situa<p-sortIcon field="situacion"></p-sortIcon>
+        </th>
+        <th style="width: 150px !important" alignFrozen="right" pFrozenColumn [frozen]="true"></th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-document let-rowIndex="rowIndex">
+      <tr [pSelectableRow]="document">
+        <td class="dataTable">{{ document.semana }}</td>
+        <td class="dataTable">{{ document.fechaEmision | customDate }}</td>
+        <td class="dataTable">{{ document.glosa2 }}</td>
+        <td class="dataTable">{{ document.guiaRemision }}</td>
+        <td class="dataTable">{{ document.cliente?.tipoDocumentoIdentidadId?.tipoDocIdentidadNombreCorto! }}</td>
+        <td class="dataTable">{{ document.cliente?.clienteRazonSocial! }}</td>
+        <td class="dataTable">{{ document.clienteDestino?.clienteRazonSocial! }}</td>
+        <td class="dataTable">{{ document.moneda }}</td>
+        <td class="dataTable">{{ document.opgratuitas }}</td>
+        <td class="dataTable">{{ document.importe | currency : "" : "S/. " }}</td>
+        <td class="dataTable">{{ document.saldo | currency : "" : "S/. " }}</td>
+        <td class="dataTable">{{ document.canalventaId?.canalVentaDescripcion }}</td>
+        <td class="dataTable">{{ document.situacion }}</td>
+        <td style="width: 50px;" fxLayout="row" fxLayoutAlign="center end" alignFrozen="right" pFrozenColumn [frozen]="true">
+          <button
+            pButton
+            pRipple
+            icon="pi pi-bars"
+            class="p-button-rounded p-button-secondary p-button-sm"
+            pTooltip="Detalle de la orden"
+            tooltipPosition="top"
+            (click)="setDetallesDocuments(document)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <p-paginator
+        #paginador
+        [rows]="size"
+        [totalRecords]="totalElements"
+        [rowsPerPageOptions]="[10, 20, 30]"
+        (onPageChange)="showPageFiltroComprobante($event)"
+      ></p-paginator>
+      <div
+        *ngIf="totalElements != 0; else elseBlock1"
+        class="p-d-flex p-ai-center p-jc-between"
+      >
+        Mostrando {{ firstRowOfPage + 1 }} a {{ lastRowOfPage }} de
+        {{ totalElements }} comprobantes encontrados.
+      </div>
+      <ng-template #elseBlock1>
+        <div class="p-d-flex p-ai-center p-jc-between">
+          Total: {{ totalElements }} comprobantes.
+        </div>
+      </ng-template>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  [(visible)]="detalleDialog"
+  [style]="{ width: '1000px' }"
+  [header]="titleDetalleDialog"
+  [modal]="true"
+  styleClass="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <div class="card">
+      <p-table responsiveLayout="scroll" [value]="detalleComprobantesList">
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <th>Secuencia</th>
+            <th>C&oacute;digo</th>
+            <th>Art&iacute;culo</th>
+            <th>Unidades</th>
+            <th>UM2</th>
+            <th>Cantidad</th>
+            <th>UM1</th>
+            <th>Precio</th>
+            <th>Observaci&oacute;n</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-detalle let-columns="columns">
+          <tr>
+            <td>{{ detalle.detalleSecuencia }}</td>
+            <td>{{ detalle.articulo?.articuloCodigo }}</td>
+            <td>{{ detalle.articulo?.articuloDescripcion }}</td>
+            <td>{{ detalle.detalleUnidades }}</td>
+            <td>
+              {{ detalle.articulo.unidadmedidaId2?.unidadMedidaNombreCorto }}
+            </td>
+            <td>{{ detalle.detalleCantidad }}</td>
+            <td>
+              {{ detalle.articulo.unidadMedidaId1?.unidadMedidaNombreCorto }}
+            </td>
+            <td>{{ detalle.detallePrecio | currency : "" : "S/. " }}</td>
+            <td>{{ detalle.detalleObservacion }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </ng-template>
+</p-dialog>

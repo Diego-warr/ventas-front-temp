@@ -1,0 +1,69 @@
+.p-calendario {
+    width: 100% !important;
+}
+
+input {
+    //font-size: small;
+    width: 100%;
+}
+
+.p-select {
+    width: 100%;
+}
+
+.dataArticulo {
+    font-size: x-small;
+    font-weight: bold;
+}
+
+.titleColumnTable {
+    color: #1780d7 !important;
+}
+
+.btnFooter {
+    width: 100%;
+}
+
+
+//DATEPICKER
+::ng-deep .p-datepicker table th {
+    padding: 0.3rem 0.4rem;
+}
+
+::ng-deep .p-datepicker table td {
+    padding: 0rem !important;
+}
+
+::ng-deep .p-datepicker table td > span {
+    width: 1.5rem;
+    height: 2.1rem;
+}
+
+::ng-deep .p-datepicker table {
+    font-size: 10pt;
+    margin: -0.143rem 0;
+}
+
+::ng-deep .p-datepicker .p-datepicker-header {
+    padding: 0rem;
+}
+
+::ng-deep .p-dropdown .p-dropdown-trigger {
+    width: 1.5rem;
+}
+
+.tdtrash {
+    padding: 0% !important;
+}
+
+.label-style{
+  margin-bottom: 8px;
+}
+
+
+.content-actions{
+  width: 100%;
+  background-color: #e8e4e2;
+  margin: 0;
+  padding: 16px;
+}

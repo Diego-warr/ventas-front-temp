@@ -1,0 +1,261 @@
+<p-toast></p-toast>
+
+<div class="grid" style="padding: 8px;">
+
+  <div class="content-actions">
+    <div class="row">
+      <div class="field col-12 md:col-3 lg:col-3" >
+        <label for="fecha_inicial" class="label-style">Fecha inicial</label>
+        <p-calendar
+          id="fecha_inicial"
+          #dateIni
+          placeholder="Seleccione la fecha inicial"
+          [style]="{ width: '100%' }"
+          class="p-calendario"
+          [(ngModel)]="dateInicial"
+          (showClear)="(true)"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+          inputId="icon"
+          [required]="true"
+        ></p-calendar>
+        <small class="p-error" *ngIf="!dateInicial">campo requerido*</small>
+      </div>
+      <div class="field col-12 md:col-3 lg:col-3">
+        <label for="fecha_final" class="label-style">Fecha final</label>
+        <p-calendar
+          id="fecha_final"
+          #dateFin
+          placeholder="Seleccione la fecha final"
+          [style]="{ width: '100%' }"
+          class="p-calendario"
+          [(ngModel)]="dateFinal"
+          (showClear)="(true)"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+          inputId="icon"
+          [required]="true"
+        ></p-calendar>
+        <small class="p-error" *ngIf="!dateFinal">campo requerido*</small>
+      </div>
+      <div class="field col-12 md:col-3 lg:col-3">
+        <label for="canal_venta" class="label-style">Linea de negocio</label>
+        <p-dropdown
+          id="canal_venta"
+          class="p-select"
+          [style]="{ width: '100%' }"
+          [(ngModel)]="lineaNegocio"
+          [options]="lineasNegocioList"
+          placeholder="Linea de negocio"
+          optionLabel="lineaNegocioNombre"
+          optionValue="lineaNegocioId"
+          [required]="true"
+          (onChange)="onChangeLineaNegocio($event)"
+        >
+        </p-dropdown>
+        <small class="p-error" *ngIf="!lineaNegocio">campo requerido*</small>
+      </div>
+
+      <div class="field col-12 md:col-3 lg:col-3">
+        <label for="canal_venta" class="label-style">Canal de venta</label>
+        <p-dropdown
+          id="canal_venta"
+          class="p-select"
+          [style]="{ width: '100%' }"
+          [(ngModel)]="canalVenta"
+          [options]="canalVentaList"
+          placeholder="Canal de venta"
+          optionLabel="canalVentaDescripcion"
+          optionValue="canalVentaId"
+          [required]="true"
+          (onChange)="onChangeCanalVenta($event)"
+        >
+        </p-dropdown>
+        <small class="p-error" *ngIf="!canalVenta">campo requerido*</small>
+      </div>
+    </div>
+
+    <div class="row" >
+      <div class="col-12 md:col-3 lg:col-3">
+        <label for="input-precio-base" class="label-style">Precio base</label>
+        <p-inputNumber [(ngModel)]="precioBase"
+                       [showButtons]="true"
+                       [min]="0"
+                       [step]="0.10"
+                       id="input-precio-base"
+                       style="width: 100%;"
+                       mode="currency"
+                       currency="PEN"
+        >
+        </p-inputNumber>
+      </div>
+      <div class="col-12 md:col-3 lg:col-3">
+        <label for="input-rango-inferior" class="label-style">Rango inferior</label>
+        <p-inputNumber [(ngModel)]="rangoInferior"
+                       [showButtons]="true"
+                       buttonLayout="horizontal"
+                       id="input-rango-inferior"
+                       [step]="0.10"
+                       decrementButtonClass="p-button-danger"
+                       incrementButtonClass="p-button-success"
+                       incrementButtonIcon="pi pi-plus"
+                       decrementButtonIcon="pi pi-minus"
+                       mode="currency"
+                       currency="PEN">
+        </p-inputNumber>
+
+      </div>
+      <div class="col-12 md:col-3 lg:col-3">
+        <label for="input-rango-superior" class="label-style">Rango superior</label>
+        <p-inputNumber [(ngModel)]="rangoSuperior"
+                       [showButtons]="true"
+                       buttonLayout="horizontal"
+                       id="input-rango-superior"
+                       [step]="0.10"
+                       decrementButtonClass="p-button-danger"
+                       incrementButtonClass="p-button-success"
+                       incrementButtonIcon="pi pi-plus"
+                       decrementButtonIcon="pi pi-minus"
+                       mode="currency"
+                       currency="PEN"
+                       >
+        </p-inputNumber>
+      </div>
+      <div class="col-12 md:col-3 lg:col-3">
+        <buttonv style="margin-top: 22px;" pButton type="button" label="Calcular" (click)="calcularRangos()"></buttonv>
+      </div>
+    </div>
+  </div>
+
+  <div style="width: 100%;">
+      <p-table
+          #tblPlantilla
+          *ngIf="lineaNegocio != null"
+          [value]="productsFiltered"
+          [rows]="10" [paginator]="true"
+          dataKey="articuloId"
+          [(selection)]="productsFiltered"
+          [rowHover]="true"
+          [globalFilterFields]="['nombreArticulo', 'product.codigoArticulo']"
+      >
+          <ng-template pTemplate="caption">
+            <div class="flex">
+<!--              <button pButton label="Clear" class="p-button-outlined" icon="pi pi-filter-slash" (click)="clear(tblPlantilla)"></button>-->
+              <span class="p-input-icon-left ">
+                  <i class="pi pi-search"></i>
+                  <input pInputText type="text"
+                         (input)="tblPlantilla.filterGlobal($any($event.target).value, 'contains')"
+                         placeholder="Filtrar"
+                         style="width: 100%"
+                  />
+              </span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+              <tr>
+                  <th style="width: 4rem; visibility:hidden;">
+                    <p-tableHeaderCheckbox ></p-tableHeaderCheckbox>
+                  </th>
+                  <th class="titleColumnTable" pSortableColumn="nombreArticulo">Art&iacute;culo
+
+                  </th>
+                  <th class="titleColumnTable" >C&oacute;digo</th>
+                  <th class="titleColumnTable" >Precio Base</th>
+                  <th class="titleColumnTable" >Precio M&iacute;nimo</th>
+                  <th class="titleColumnTable" >Precio M&aacute;ximo</th>
+              </tr>
+          </ng-template>
+          <ng-template
+              pTemplate="body"
+              let-product
+          >
+              <tr >
+                  <td style="visibility:hidden;">
+                      <p-tableCheckbox
+                          [value]="product"
+
+                          >
+                      </p-tableCheckbox>
+                  </td>
+                  <td  class="dataArticulo">
+                    {{product.nombreArticulo}}
+                  </td>
+                  <td  class="dataArticulo">
+                    {{product.codigoArticulo}}
+                  </td>
+                  <td>
+                    <p-inputNumber [(ngModel)]="product.precioBase"
+                                   mode="decimal"
+                                   [showButtons]="true"
+                                   inputId="minmax-buttons"
+                                   [min]="0"
+                                   [step]="0.10"
+                                   mode="currency"
+                                   currency="PEN">
+                    </p-inputNumber>
+                  </td>
+                  <td>
+                    <p-inputNumber [(ngModel)]="product.precioMinimo"
+                                   mode="decimal"
+                                   [showButtons]="true"
+                                   inputId="minmax-buttons"
+                                   [min]="0"
+                                   [step]="0.10"
+                                   mode="currency"
+                                   currency="PEN">
+                    </p-inputNumber>
+                  </td>
+                  <td>
+                    <p-inputNumber [(ngModel)]="product.precioMaximo"
+                                   mode="decimal"
+                                   [showButtons]="true"
+                                   inputId="minmax-buttons"
+                                   [min]="0"
+                                   [step]="0.10"
+                                   mode="currency"
+                                   currency="PEN">
+                    </p-inputNumber>
+                  </td>
+              </tr>
+          </ng-template>
+          <ng-template pTemplate="summary">
+              <div class="flex align-items-center justify-content-between">
+                  Total: {{productsFiltered ? productsFiltered.length : 0}} Art&iacute;culos.
+              </div>
+          </ng-template>
+      </p-table>
+  </div>
+  <div  class="col-12 md:col-12 lg:col-12">
+      <div class="grid">
+          <div class="col-12 md:col-12 lg:col-12">
+              <div class="grid" fxLayout="row" fxLayoutAlign="center center">
+                  <div class="col-12 md:col-6 lg:col-3 flex">
+                      <button
+                          pButton
+                          type="button"
+                          class="btnFooter"
+                          label="Cancelar"
+                          [style]="{ width: '100%' }"
+                          icon="pi pi-times">
+                      </button>
+                  </div>
+                  <div class="col-12 md:col-6 lg:col-3 flex">
+                      <button
+                          pButton
+                          type="button"
+                          class="btnFooter"
+                          label="Guardar"
+                          [style]="{ width: '100%' }"
+                          icon="pi pi-check"
+                          (click)="savePlantilla()"
+                          [disabled]="disabledBtnGuardar()"
+                          >
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+    <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

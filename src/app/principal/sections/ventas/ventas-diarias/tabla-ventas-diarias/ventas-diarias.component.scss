@@ -1,0 +1,54 @@
+body {
+    padding: 0em;
+    font-family: -apple-system, BlinkMacSystemFont, “Segoe UI”, Roboto, Helvetica, Arial, sans-serif, “Apple Color Emoji”, “Segoe UI Emoji”, “Segoe UI Symbol”;
+}
+
+td {
+    font-size: x-small;
+}
+
+td {
+    padding-bottom: 0rem !important;
+    padding-right: 0rem !important;
+    padding-left: 0.3rem !important;
+    padding-top: 0rem !important;
+}
+
+input {
+    font-size: small;
+    width: 100%;
+}
+
+.p-select{
+    width: 100%;
+}
+
+.p-calendario{
+    width: 100%;
+}
+
+.titleColumnTable {
+    color: #1780d7 !important;
+}
+
+.dataTable {
+    font-weight: bold;
+}
+
+.btnSearch {
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+.nodata {
+    text-align: center !important;
+    color: #1780d7 !important;
+}
+
+::ng-deep .p-dropdown .p-dropdown-trigger {
+    width: 1.5rem;
+}
+
+::ng-deep .p-dropdown .p-dropdown-label {
+    padding-right: 0rem
+}

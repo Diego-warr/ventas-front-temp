@@ -1,0 +1,345 @@
+<p-toast></p-toast>
+
+<p-breadcrumb [model]="navigationItmesRoutes"></p-breadcrumb>
+
+<p-panel [showHeader]="false">
+  <p-tabView>
+
+    <p-tabPanel header="Ordenes de pedido">
+      <p-table
+        #dtOrdenes
+        [value]="ordenesPedidosCustomList"
+        responsiveLayout="scroll"
+        sortMode="multiple"
+        [rowHover]="true"
+        [rows]="10"
+        [rowsPerPageOptions]="[10, 25, 35]"
+        [showCurrentPageReport]="true"
+        [paginator]="true"
+        [loading]="loadingOrdenes"
+        [resizableColumns]="true"
+        styleClass="p-datatable-sm"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros."
+        [globalFilterFields]="[
+          'estado',
+          'fecha',
+          'semana',
+          'tipoOrden',
+          'numero',
+          'canalVenta.canalVentaDescripcion',
+          'cliente.clienteRazonSocial',
+          'clienteDestino.clienteRazonSocial',
+          'fechaVencimiento',
+          'ordenCompra',
+          'tienda',
+          'origen',
+          'fechaEntrega',
+          'horaEntrega',
+          'lugarEntrega',
+          'observaciones',
+          'lote',
+          'vendedor',
+          'fechaCreacion'
+        ]"
+      >
+        <ng-template pTemplate="emptymessage">
+          <tr class="titleColumnTableOP">
+            <td colspan="12" class="nodata">
+              No hay datos de ordenes de pedido que mostrar.
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="caption">
+          <div class="grid">
+            <div class="col-12 md:col-12 lg:col-4">
+              <div class="grid">
+                <div class="col-12 md:col-5 lg:col-5 flex">
+                  <p-dropdown
+                    class="p-select"
+                    [style]="{ width: '100%' }"
+                    placeholder="Filtrar por:"
+                    [options]="filtroSelectOrdenesPedidos"
+                    [(ngModel)]="indexSelected"
+                    optionLabel="label"
+                    optionValue="id"
+                    (onChange)="onChangeFiltroSelect($event)"
+                  >
+                  </p-dropdown>
+                </div>
+                <div class="col-12 md:col-6 lg:col-6 flex">
+                  <input
+                    [(ngModel)]="filterName"
+                    pInputText
+                    type="text"
+                    placeholder="datos a buscar..."
+                    [disabled]="inputFiltroDisabled()"
+                    [maxlength]="nroCaracteresFilter"
+                  />
+                </div>
+                <div class="col-12 md:col-1 lg:col-1 flex btnSearch">
+                  <button
+                    pButton
+                    pRipple
+                    [style]="{ width: '100%' }"
+                    label=""
+                    icon="pi pi-search"
+                    class="p-button-primary p-mr-2"
+                    (click)="buscarOrdenes(filterName, index)"
+                    [disabled]="btnBuscarDisabled()"
+                  ></button>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 md:col-12 lg:col-6">
+              <div class="grid">
+                <div class="col-12 md:col-6 flex">
+                  <label [style]="{ width: '45px' }" for="dateInicial"
+                    >Fecha inicial</label
+                  >
+                  <p-calendar
+                    #dateOrdenIni
+                    class="p-calendario"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="dateInicial"
+                    (showClear)="(true)"
+                    (onSelect)="onSelectedDates()"
+                    dateFormat="dd/mm/yy"
+                    [showIcon]="true"
+                    inputId="icon"
+                  ></p-calendar>
+                </div>
+                <div class="col-12 md:col-6 flex">
+                  <label [style]="{ width: '45px' }" for="dateFinal"
+                    >Fecha final</label
+                  >
+                  <p-calendar
+                    #dateOrdenFin
+                    class="p-calendario"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="dateFinal"
+                    (showClear)="(true)"
+                    (onSelect)="onSelectedDates()"
+                    dateFormat="dd/mm/yy"
+                    [showIcon]="true"
+                    inputId="icon"
+                  ></p-calendar>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 md:col-6 lg:col-2">
+              <div class="grid" fxLayoutAlign="end center">
+                <div class="col-12 md:col-6 lg:col-8 flex">
+                  <button
+                    pButton
+                    [style]="{ width: '100%' }"
+                    label="Clear"
+                    class="p-button-outlined"
+                    icon="pi pi-filter-slash"
+                    (click)="clearFiltersOrdenes(dtOrdenes)"
+                  ></button>
+                </div>
+                <div class="col-12 md:col-6 lg:col-3 flex">
+                  <i
+                    *ngIf="spinnerOn == false; else elseSpinner"
+                    pButton
+                    pRipple
+                    icon="pi pi-spinner"
+                    style="font-size: 1rem"
+                    class="p-button-rounded p-button-primary"
+                    (click)="reloadListaOrdenes(dtOrdenes)"
+                    pTooltip="Actualizar lista de ordenes"
+                    tooltipPosition="top"
+                  >
+                  </i>
+                  <ng-template #elseSpinner>
+                    <p-progressSpinner
+                      [style]="{ width: '30px', height: '30px' }"
+                      styleClass="custom-spinner"
+                      strokeWidth="8"
+                      fill="var(--surface-ground)"
+                      animationDuration=".5s"
+                    ></p-progressSpinner>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="titleColumnTableOP" pSortableColumn="estado">
+              Estado<p-sortIcon field="estado"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="fecha">
+              Fecha<p-sortIcon field="fecha"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="semana">
+              Semana<p-sortIcon field="semana"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="tipoOrden">
+              Tipo<p-sortIcon field="tipoOrden"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="numero">
+              N&uacute;mero<p-sortIcon field="numero"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="canalVenta.canalVentaDescripcion">
+              Canal venta<p-sortIcon
+                field="canalVenta.canalVentaDescripcion"
+              ></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="cliente.clienteRazonSocial">
+              Cliente en Comprobante<p-sortIcon
+                field="cliente.clienteRazonSocial"
+              ></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="clienteDestino.clienteRazonSocial">
+              Cliente Real<p-sortIcon
+                field="clienteDestino.clienteRazonSocial"
+              ></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="fechaVencimiento">
+              Fecha vencimiento<p-sortIcon
+                field="fechaVencimiento"
+              ></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="ordenCompra">
+              Orden compra<p-sortIcon field="ordenCompra"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="tienda">
+              Tienda<p-sortIcon field="tienda"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="origen">
+              Origen<p-sortIcon field="origen"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="fechaEntrega">
+              Fecha entrega<p-sortIcon field="fechaEntrega"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="horaEntrega">
+              Hora entrega<p-sortIcon field="horaEntrega"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="lugarEntrega">
+              Lugar entrega<p-sortIcon field="lugarEntrega"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="observaciones">
+              Observaciones<p-sortIcon field="observaciones"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="lote">
+              Lote<p-sortIcon field="lote"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="vendedor">
+              Vendedor<p-sortIcon field="vendedor"></p-sortIcon>
+            </th>
+            <th class="titleColumnTableOP" pSortableColumn="fechaCreacion">
+              Fecha creación<p-sortIcon field="fechaCreacion"></p-sortIcon>
+            </th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-orden>
+          <tr>
+            <td>
+              <span
+                [class]="'product-badge status-' + orden.estado.toLowerCase()"
+                >{{ orden.estado }}</span
+              >
+            </td>
+            <td>{{ orden.fecha | customDate }}</td>
+            <td>{{ orden.semana }}</td>
+            <td>{{ orden.tipoOrden }}</td>
+            <td>{{ orden.serie + "-" + orden.numero }}</td>
+            <td>{{ orden.canalventa?.canalVentaDescripcion }}</td>
+            <td>{{ orden.cliente?.clienteRazonSocial }}</td>
+            <td>{{ orden.clienteDestino?.clienteRazonSocial }}</td>
+            <td>{{ orden.fechaVencimiento | customDate }}</td>
+            <td>{{ orden.ordenCompra }}</td>
+            <td>{{ orden.tienda }}</td>
+            <td>{{ orden.origen }}</td>
+            <td>{{ orden.fechaEntrega | customDate }}</td>
+            <td>{{ orden.horaEntrega }}</td>
+            <td>{{ orden.lugarEntrega }}</td>
+            <td>{{ orden.observaciones }}</td>
+            <td>{{ orden.lote }}</td>
+            <td>
+              {{
+                orden.vendedor?.numeroDocumentoVendedor +
+                  " " +
+                  orden.vendedor?.nombreVendedor +
+                  "
+              " +
+                  orden.vendedor?.apellidosVendedor
+              }}
+            </td>
+            <td>{{ orden.fechaCreacion | customDateTime }}</td>
+            <td>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-file"
+                class="p-button-rounded p-button-secondary p-button-sm"
+                pTooltip="Detalle de la orden"
+                tooltipPosition="top"
+                (click)="setDetallesDeOrden(orden)"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="flex align-items-center justify-content-between">
+            Total:
+            {{ ordenesPedidosCustomList ? ordenesPedidosCustomList.length : 0 }}
+            Ordenes de pedido.
+          </div>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+
+    <p-dialog
+      [(visible)]="detalleDialog"
+      [style]="{ width: '1000px' }"
+      [header]="'Detalle de orden'"
+      [modal]="true"
+      styleClass="p-fluid"
+    >
+      <ng-template pTemplate="content">
+        <div class="card">
+          <p-table responsiveLayout="scroll" [value]="detalleOrdenCustomList">
+            <ng-template pTemplate="header" let-columns>
+              <tr>
+                <th>Secuencia</th>
+                <th>C&oacute;digo</th>
+                <th>Art&iacute;culo</th>
+                <th>Unidades</th>
+                <th>UM2</th>
+                <th>Cantidad</th>
+                <th>UM1</th>
+                <th>Precio</th>
+                <th>Observaci&oacute;n</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-detalle let-columns="columns">
+              <tr>
+                <td>{{ detalle.secuencia }}</td>
+                <td>{{ detalle.articulo?.articuloCodigo }}</td>
+                <td>{{ detalle.articulo?.articuloDescripcion }}</td>
+                <td>{{ detalle.unidades }}</td>
+                <td>
+                  {{
+                    detalle.articulo?.unidadmedidaId2?.unidadMedidaNombreCorto
+                  }}
+                </td>
+                <td>{{ detalle.cantidad }}</td>
+                <td>
+                  {{
+                    detalle.articulo?.unidadMedidaId1?.unidadMedidaNombreCorto!
+                  }}
+                </td>
+                <td>{{ detalle.precio | currency : "" : "S/. " }}</td>
+                <td>{{ detalle.observacion }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </ng-template>
+    </p-dialog>
+  </p-tabView>
+</p-panel>

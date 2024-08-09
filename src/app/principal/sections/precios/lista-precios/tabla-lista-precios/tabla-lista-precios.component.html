@@ -1,0 +1,252 @@
+<p-toast></p-toast>
+
+<div class="grid" fxLayoutAlign="space-between center">
+    <div class="col-12 md:col-12 lg:col-8">
+        <div class="grid">
+            <div class="field col-12 md:col-6 lg:col-4">
+                <label for="lineaNegocio" class="block titleFields">Linea de Negocio</label>
+                <p-dropdown class="p-select" [style]="{'width':'100%'}" placeholder="Seleccione Linea de Negocio:"
+                    [options]="lineasNegocio" optionLabel="lineaNegocioNombre" optionValue="lineaNegocioId"
+                    [(ngModel)]="lineaNegocioSelected">
+                </p-dropdown>
+            </div>
+            <div class="field col-12 md:col-6 lg:col-4">
+                <label for="canalVenta" class="block titleFields">Canal de Venta</label>
+                <p-multiSelect class="p-select" [style]="{'width':'100%'}" [options]="canalesVenta" [(ngModel)]="canalVentaSelected" placeholder="Seleccione Canal de Venta:"
+                               optionLabel="canalVentaDescripcion" optionValue="canalVentaId" selectedItemsLabel="{0} items selected"></p-multiSelect>
+            </div>
+            <div class="field col-12 md:col-6 lg:col-3">
+                <label for="agrupCliente" class="block titleFields">Agrupaci&oacute;n clientes</label>
+                <p-multiSelect class="p-select" [style]="{'width':'100%'}" placeholder="Seleccione Agrupación" [options]="agrupacionCliente" optionLabel="descripcion" optionValue="agrupacionId" [(ngModel)]="agrupacionClienteSelected"
+                               selectedItemsLabel="{0} items selected"></p-multiSelect>
+            </div>
+            <div class="field col-12 md:col-6 lg:col-1" style="margin-top: 20px">
+                <button pButton pRipple [style]="{'width':'100%'}" label="" icon="pi pi-search" class="p-button-primary p-mr-2"
+                    (click)="buscarPorLineaIdCanalId(lineaNegocioSelected, canalVentaSelected)" [disabled]="">
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 md:col-12 lg:col-3">
+        <div class="grid">
+            <div class="col-12 md:col-6 lg:col-12" style="margin-top: 5px">
+                <button pButton pRipple [style]="{'width':'100%'}" label="Nuevo Precio base" icon="pi pi-plus-circle"
+                    class="p-button-success p-mr-2" (click)="newPrecioBase()">
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="grid" *ngIf="tituloLineaNegocio && tituloCanalVenta">
+    <div class="col-12 md:col-12 lg:col-12">
+        <div class="grid" fxLayoutAlign="center center" style="margin: 0px;">
+            <h2 class="mainTitle"><u>{{tituloLineaNegocio}} {{separator}} {{tituloCanalVenta}}</u></h2>
+        </div>
+    </div>
+</div>
+
+<div class="grid">
+    <div class="col-12 md:col-12 lg:col-12">
+        <div class="grid">
+
+                <div class="col-12 md:col-6 lg:col-3 borderTable" *ngIf="articulosLimaUniqueSort.length != 0">
+                    <div class="p-field titleListaPrecio">
+                        <div class="p-grid" style="text-align: center;">
+                            <div class="p-col-4">
+                                <p-table #dt1 [value]="articulosLimaUniqueSort" [rows]="10" responsiveLayout="scroll"
+                                    styleClass="p-datatable-gridlines" [rowHover]="true" [globalFilterFields]="['','','','','']">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th colspan="3" style="color: #f8f9fa" >Zonas</th>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="3" style="color: #f8f9fa">UM</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="titleZonasUmRango" style="text-align: center;">{{tituloArticulo}}</th>
+                                            <th class="titleZonasUmRango" style="text-align: center; padding-left: 2px; padding-right: 2px; padding-top: 2px; padding-bottom: 2px;">{{tituloPrecioBase}}</th>
+                                            <th class="titleZonasUmRango" style="text-align: center;">{{tituloFechas}}</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-gallina>
+                                        <tr>
+                                            <td class="dataTable" style="font-size: 10px; text-align: justify; padding-left: 2px; padding-right: 2px; padding-top: 0px; padding-bottom: 0px;">
+                                                {{gallina.articuloId.articuloDescripcion}}
+                                            </td>
+                                            <td class="dataTable" style="font-size: 10px; text-align: center; padding-left: 2px; padding-right: 2px;">
+                                                {{gallina.precioBase | currency:'':'S/. '}}
+                                            </td>
+                                            <td class="dataTable" style="font-size: 10px; text-align: center; padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;">
+                                                {{gallina.fechaInicio | customDate}} - {{gallina.fechaFin | customDate}}
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6 lg:col-3 borderTable" *ngIf="preciosLima.length != 0">
+                    <div class="p-field titleListaPrecio">
+                        <div class="p-grid" style="text-align: center;">
+                            <div class="p-col-4">
+                                <p-table #dt1 [value]="preciosLima" [rows]="10" responsiveLayout="scroll"
+                                    styleClass="p-datatable-gridlines" [rowHover]="true" [globalFilterFields]="['','','','','']">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th class="titleZonasUmRango" style="text-align: center;" colspan="3">{{tituloLima}}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="titleZonasUmRango" style="text-align: center;" colspan="3">{{tituloGrupoRango}}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="titleZonasUmRango" style="text-align: center; padding-left: 2px; padding-right: 2px;"  *ngFor="let rango of rangosHeaderTableLima">{{rango}}</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-precio>
+                                        <tr>
+                                            <td class="dataTable" style="text-align: center;" *ngFor="let p of precio">{{p | currency:'':'S/. '}}</td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6 lg:col-3 borderTable" *ngIf="preciosCanete.length != 0">
+                    <div class="p-field titleListaPrecio">
+                        <div class="p-grid" style="text-align: center;">
+                            <div class="p-col-4">
+                                <p-table #dt1 [value]="preciosCanete" [rows]="10" responsiveLayout="scroll"
+                                    styleClass="p-datatable-gridlines" [rowHover]="true" [globalFilterFields]="['','','','','']">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th class="titleZonasUmRango" style="text-align: center;" colspan="3">{{tituloCanete}}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="titleZonasUmRango" style="text-align: center;" colspan="3">{{tituloGrupoRango}}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="titleZonasUmRango" style="text-align: center; padding-left: 2px; padding-right: 2px;" *ngFor="let rango of rangosHeaderTableCanete">{{rango}}</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-precio>
+                                        <tr>
+                                            <td class="dataTable" style="text-align: center;" *ngFor="let p of precio">{{p | currency:'':'S/. '}}</td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6 lg:col-3 borderTable" *ngIf="preciosProvincia.length != 0">
+                    <div class="p-field titleListaPrecio">
+                        <div class="p-grid">
+                            <div class="p-col-4">
+                                <p-table #dt1 [value]="preciosProvincia" [rows]="10" responsiveLayout="scroll"
+                                    styleClass="p-datatable-gridlines" [rowHover]="true"
+                                    [globalFilterFields]="['nombres','correo','username','numDocumento','apellidos']">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th class="titleZonasUmRango" style="text-align: center;" colspan="3">{{tituloProvincia}}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="titleZonasUmRango" style="text-align: center;" colspan="3">{{tituloGrupoRango}}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="titleZonasUmRango" style="text-align: center; padding-left: 2px; padding-right: 2px;" *ngFor="let rango of rangosHeaderTableProvincia">{{rango}}</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-precio>
+                                        <tr>
+                                            <td class="dataTable" style="text-align: center;" *ngFor="let p of precio">{{p | currency:'':'S/. '}}</td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+</div>
+
+<p-dialog [(visible)]="listaPrecioDialog" [style]="{width: '430px', height:'650px'}" [header]=titleDialog [modal]="true"
+    styleClass="p-fluid" [closable]="false">
+    <ng-template pTemplate="content">
+        <br>
+        <div class="grid">
+            <div class="col">
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="fechaInicial">Fecha incial</label>
+                        <p-calendar [(ngModel)]="fechaInicial" dateFormat="dd/mm/yy" [showIcon]="true"
+                            inputId="fechaInicial">
+                        </p-calendar>
+                        <small class="p-error" *ngIf="!fechaInicial">campo requerido*</small><br>
+                        <small class="p-error" *ngIf="validarFechaPrecioBase(fechaInicial!)==true">Fecha inicial no
+                            puede ser menor a hoy*</small>
+                    </div>
+                </div>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="fechaFinal">Fecha final</label>
+                        <p-calendar [(ngModel)]="fechaFinal" dateFormat="dd/mm/yy" [showIcon]="true"
+                            inputId="fechaFinal">
+                        </p-calendar>
+                        <small class="p-error" *ngIf="!fechaFinal">campo requerido*</small><br>
+                        <small class="p-error" *ngIf="validarFechaPrecioBase(fechaFinal!)==true">Fecha final no
+                            puede ser menor a hoy*</small><br>
+                    </div>
+                </div>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="montoInPrecioBase">Precio Base</label>
+                        <p-inputNumber id="montoInPrecioBase" placeholder="Ingrese el precio base" [(ngModel)]="montoInPrecioBase" mode="currency" currency="PEN">
+                        </p-inputNumber>
+                        <small class="p-error" *ngIf="!montoInPrecioBase">campo requerido*</small>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="grupoPrecio">Grupos de precio</label>
+                        <p-dropdown [options]="grupoPreciosList" optionLabel="descripcion" optionValue="grupoPrecioId"
+                            [(ngModel)]="selectedGrupoPrecio"
+                            placeholder="Seleccione como m&iacute;nimo un grupo precio"
+                            (ngModelChange)="onChangeGrupoPrecio($event)">
+                        </p-dropdown>
+                        <small class="p-error" *ngIf="">campo requerido*</small>
+                    </div>
+                </div>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <p-listbox [listStyle]="{'width':'350px'}" [options]="grupoPrecioSelect"
+                            optionLabel="descripcion" [(ngModel)]="selectedGrupoPrecio"
+                            (onDblClick)="onDblClickListBox($event)">
+                        </p-listbox>
+                        <small class="p-error" *ngIf="validListBoxValues(this.grupoPrecioSelect)==true">campo
+                            requerido*</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()">
+        </button>
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" (click)="create()"
+            [disabled]="validOrInvalidBtn()">
+        </button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

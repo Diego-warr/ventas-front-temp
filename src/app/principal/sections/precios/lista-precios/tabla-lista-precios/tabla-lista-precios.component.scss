@@ -1,0 +1,45 @@
+.titleListaPrecio {
+  text-align: center;
+}
+
+.mainTitle {
+  font-weight: bold;
+}
+
+//tamaño calendar
+::ng-deep .p-datepicker table td {
+  padding: 0.3rem !important;
+}
+
+::ng-deep .p-datepicker table td>span {
+  width: 1.4rem;
+  height: 1rem;
+}
+
+::ng-deep .p-datepicker table {
+  font-size: 10pt;
+  margin: -0.143rem 0;
+}
+
+::ng-deep .p-datepicker .p-datepicker-header {
+  padding: 0.3rem;
+}
+
+.titleFields {
+  margin-bottom: 5px !important;
+  font-weight: bold !important;
+}
+
+.titleZonasUmRango {
+  color: #1780d7 !important;
+}
+
+.dataTable {
+  font-weight: bold;
+  font-size: x-small;
+}
+
+.borderTable {
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+}

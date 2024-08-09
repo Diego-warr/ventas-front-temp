@@ -1,0 +1,119 @@
+<p-toast></p-toast>
+
+<div class="card">
+    <p-table #dtLineas [value]="lineasNegocioList" [rows]="10" [paginator]="true" sortMode="multiple"
+        [globalFilterFields]="['lineaNegocioNombre','familiaTipo','lineaNegocioStatus']" responsiveLayout="scroll"
+        [loading]="loadingLineas" [rowsPerPageOptions]="[10,25,30]" [rowHover]="true" dataKey="id"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros."
+        [showCurrentPageReport]="true">
+        <ng-template pTemplate="caption">
+            <div class="grid">
+                <div class="col-12 md:col-12 lg:col-12">
+                    <div class="grid" fxLayout="row" fxLayoutAlign="space-between center">
+                        <div class="col-12 md:col-3 flex">
+                            <input [style]="{'width':'100%'}" [(ngModel)]="filterName" pInputText
+                                placeholder="buscar por linea" type="text"
+                                (input)="filtrarLineas($event , 'contains')" />
+                        </div>
+                        <div class="col-12 md:col-3 flex">
+                            <button pButton pRipple [style]="{'width':'100%'}" label="Nueva linea de negocio"
+                                icon="pi pi-plus-circle" class="p-button-success p-mr-2" (click)="openNew()">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="titleColumnTable" pSortableColumn="lineaNegocioNombre">Nombre <p-sortIcon field="lineaNegocioNombre"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="familiaTipo">Familia<p-sortIcon field="familiaTipo"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" pSortableColumn="lineaNegocioStatus">Estado <p-sortIcon field="lineaNegocioStatus"></p-sortIcon>
+                </th>
+                <th class="titleColumnTable" >Creado por</th>
+                <th class="titleColumnTable" >Modificado por</th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-linea>
+            <tr>
+                <td class="dataTable">{{linea.lineaNegocioNombre}}</td>
+                <td class="dataTable">{{linea.familiaTipo}}</td>
+                <td class="dataTable">
+                    <span>
+                        <div *ngIf="linea.lineaNegocioStatus=='A'; else elseBlock" style="color: forestgreen;"
+                            class="font-size-status">Habilitado</div>
+                        <ng-template #elseBlock>
+                            <div style="color: #df2f2f;" class="font-size-status">Inhabilitado</div>
+                        </ng-template>
+                    </span>
+                </td>
+                <td>{{''}}</td>
+                <td>{{''}}</td>
+                <td>
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-warning mr-2"
+                        (click)="setEditLinea(linea)" pTooltip="Editar linea de negocio" tooltipPosition="top">
+                    </button>
+                    <button *ngIf="linea.lineaNegocioStatus=='A'; else elseBlock1" pButton pRipple icon="pi pi-trash"
+                        class="p-button-rounded p-button-danger icon-action p-button-sm"
+                        (click)="deshabilitarLinea(linea)" pTooltip="Inhabilitar linea de negocio"
+                        tooltipPosition="top">
+                    </button>
+                    <ng-template #elseBlock1>
+                        <button pButton pRipple icon="pi pi-arrow-circle-up"
+                            class="p-button-rounded p-button-success icon-action " (click)="habilitarLinea(linea)"
+                            pTooltip="Habilitar linea de negocio" tooltipPosition="top">
+                        </button>
+                    </ng-template>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="flex align-items-center justify-content-between">
+                Total: {{ lineasNegocioList ? lineasNegocioList.length : 0 }} Lineas de negocio.
+            </div>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [(visible)]="lineaNegocioDialog" [style]="{width: '400px', height:'430px'}" [header]=titleDialog
+    [modal]="true" styleClass="p-fluid" [closable]="false">
+
+    <br>
+    <br>
+
+    <ng-template pTemplate="content">
+        <div class="formgrid grid">
+            <div class="field col">
+                <label for="lineaNegocioNombre">Linea de negocio</label>
+                <input type="text" pInputText id="lineaNegocioNombre" [(ngModel)]="lineaNegocio.lineaNegocioNombre" />
+                <small class="p-error" *ngIf="!lineaNegocio.lineaNegocioNombre">campo requerido*</small>
+            </div>
+        </div>
+        <div class="formgrid grid">
+            <div class="field col">
+                <label for="familiaTipo">Familia tipo</label>
+                <input type="text" pInputText id="familiaTipo" [(ngModel)]="lineaNegocio.familiaTipo" />
+                <small class="p-error" *ngIf="!lineaNegocio.familiaTipo">campo requerido*</small>
+            </div>
+        </div>
+        <div class="formgrid grid">
+            <div class="field col">
+                <label for="lineaNegocioStatus">Estado</label>
+                <input type="text" pInputText id="lineaNegocioStatus" [(ngModel)]="estadoConvert"
+                    [disabled]="disableEstado" />
+                <small class="p-error" *ngIf="!estadoConvert">campo requerido*</small>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer" class="foo">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" [disabled]="validOrInvalidBtn()"
+            (click)="onCreateOrUpdateLinea(lineaNegocio)"></button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

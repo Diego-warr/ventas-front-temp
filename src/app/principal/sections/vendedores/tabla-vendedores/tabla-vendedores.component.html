@@ -1,0 +1,177 @@
+<p-toast></p-toast>
+
+<p-table #dt1 [value]="vendedores" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+  responsiveLayout="scroll" [loading]="loadingUsuarios" styleClass="p-datatable-gridlines"
+  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros." [rowsPerPageOptions]="[10,25,50]"
+  [rowHover]="true" [globalFilterFields]="['nombres','correo','username','numDocumento','apellidos']">
+  <ng-template pTemplate="caption">
+    <div class="grid">
+      <div class="col-12 md:col-12 lg:col-12">
+        <div class="grid" fxLayout="row" fxLayoutAlign="space-between center">
+          <div class="col-12 md:col-6 lg:col-3 flex">
+            <input [style]="{'width':'100%'}" pInputText placeholder="Buscar por cualquier campo..." type="text"
+              (input)="filtrarClientesAsignados($event , 'contains')" />
+          </div>
+          <div class="col-12 md:col-6 lg:col-3 flex">
+            <button pButton pRipple [style]="{'width':'100%'}" label="Nuevo Usuario" icon="pi pi-plus-circle"
+              class="p-button-success p-mr-2" (click)="openNew()">
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th class="titleColumnTable">Correo</th>
+      <th class="titleColumnTable">Usuario</th>
+      <th class="titleColumnTable">Estado</th>
+      <th class="titleColumnTable">Auxiliar</th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-vendedor>
+    <tr>
+      <td>{{vendedor.correo}}</td>
+      <td>{{vendedor.username}}</td>
+      <td>
+        <span [class]="'product-badge status-' + vendedor.username.toUpperCase()">
+          <div *ngIf="vendedor.status=='1'; else elseBlock0" style="color: forestgreen;" class="font-size-status">
+            Habilitado</div>
+          <ng-template #elseBlock0>
+            <div style="color: #df2f2f;" class="font-size-status">Inhabilitado</div>
+          </ng-template>
+        </span>
+      </td>
+      <td>
+        <div *ngIf="vendedor.vendedorAuxiliar=='AUX'; else elseBlock2" style="color: rgb(63, 164, 241);" class="font-size-status">
+          Auxiliar</div>
+        <ng-template #elseBlock2>
+          <div style="color: #923185;" class="font-size-status">No Auxiliar</div>
+        </ng-template>
+      </td>
+      <td class="botones">
+        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-warning icon-action p-button-sm"
+          pTooltip="Editar usuario" tooltipPosition="top" (click)="setEditUsuario(vendedor)"></button>
+        <button *ngIf="vendedor.status==1; else elseBlock3" pButton pRipple icon="pi pi-trash"
+          class="p-button-rounded p-button-danger icon-action p-button-sm" (click)="deshabilitarVendedor(vendedor)"
+          pTooltip="Inhabilitar Usuario" tooltipPosition="top"></button>
+        <ng-template #elseBlock3>
+          <button pButton pRipple icon="pi pi-arrow-circle-up" class="p-button-rounded p-button-success icon-action "
+            (click)="habilitarUsuario(vendedor)" pTooltip="Habilitar Usuario" tooltipPosition="top"></button>
+        </ng-template>
+        <button pButton pRipple icon="pi pi-users" style="background-color: rgb(192, 153, 103);" class="p-button-rounded icon-action p-button-sm"
+          pTooltip="Portafolio de Clientes" tooltipPosition="top" (click)="openCloseModalAsignarClientes(vendedor)"></button>
+        <button pButton pRipple icon="pi pi-file" class="p-button-rounded p-button-secondary icon-action p-button-sm"
+                pTooltip="Ordenes de pedido" tooltipPosition="top" (click)="openCloseModalOrdenPedido(vendedor)"></button>
+        <button *ngIf="vendedor.vendedorAuxiliar=='AUX'; else elseBlock4" pButton pRipple type="button" icon="pi pi-sun" class="p-button-rounded p-button-help p-button-sm"
+                pTooltip="Inhabilitar vendedor auxiliar" tooltipPosition="top" (click)="inhabilitarVendedorAuxiliar(vendedor)"></button>
+        <ng-template #elseBlock4>
+          <button pButton pRipple type="button" icon="pi pi-sun" class="p-button-rounded p-button icon-action"
+                  pTooltip="Habilitar vendedor auxiliar" tooltipPosition="top" (click)="habilitarVendedorAuxiliar(vendedor)"></button>
+        </ng-template>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="summary">
+    <div class="p-d-flex p-ai-center p-jc-between">
+      Total: {{vendedores ? vendedores.length : 0 }} Vendedores.
+    </div>
+  </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="productDialog" [style]="{width: '50%', height:'100%'}" [header]=titleDialog [modal]="true"
+  styleClass="p-fluid" [closable]="false">
+  <ng-template pTemplate="content">
+
+    <div class="grid">
+      <div class="col-12 md:col-12 lg:col-6">
+
+          <div class="p-fieldx">
+            <label class="dataTableOP" for="name">Nombres</label>
+            <input type="text" pInputText id="name" [(ngModel)]="vendedor.nombres" required autofocus />
+            <small class="p-error" *ngIf="!vendedor.nombres">Nombres requeridos</small>
+          </div>
+          <p></p>
+          <div class="p-fieldx">
+            <label class="dataTableOP" for="apellidos">Apellidos</label>
+            <input type="text" pInputText id="apellidos" [(ngModel)]="vendedor.apellidos" required />
+            <small class="p-error" *ngIf="!vendedor.apellidos">Apellidos requeridos</small>
+          </div>
+          <p></p>
+          <div class="p-fieldx">
+            <label class="dataTableOP" for="correo">Correo</label>
+            <input type="text" pInputText id="correo" [(ngModel)]="vendedor.correo" required />
+            <small class="p-error" *ngIf="!vendedor.correo">Correo requerido</small>
+          </div>
+          <p></p>
+          <div class="p-fieldx">
+            <label class="dataTableOP" for="username">Nombre de usuario</label>
+            <input type="text" pInputText id="username" [(ngModel)]="vendedor.username" required />
+            <small class="p-error" *ngIf="!vendedor.username">Nombre de usuario requerido</small>
+          </div>
+          <p></p>
+          <div class="p-fieldx">
+            <label class="dataTableOP" for="password">Contraseña</label>
+            <p-password id="password" [(ngModel)]="vendedor.password" [toggleMask]="true" required></p-password>
+            <small class="p-error" *ngIf="vendedor.password=='' && actualizarUsuario == false">Contraseña requerida</small>
+          </div>
+          <p></p>
+          <div class="p-fieldx">
+            <label class="dataTableOP" for="dni">Dni</label>
+            <input id="dni" type="text" pInputText [(ngModel)]="vendedor.dni" required />
+            <small class="p-error" *ngIf="!vendedor.dni">Dni requerido</small>
+          </div>
+          <p></p>
+          <div class="p-fieldx">
+            <label class="dataTableOP" for="vendedorDocumentoSerie">Documento serie</label>
+            <input id="vendedorDocumentoSerie" type="text" pInputText [(ngModel)]="vendedor.vendedorDocumentoSerie" required />
+          </div>
+          <p></p>
+          <div class="p-fieldx">
+            <label class="dataTableOP" for="permitirEditar">Permitir editar OP</label>
+            <p-selectButton [options]="stateOptions" [(ngModel)]="vendedor.permitirEditar" optionLabel="label" optionValue="value"></p-selectButton>
+          </div>
+
+      </div>
+      <div class="col">
+        <div class="p-field">
+          <label class="p-mb-3" style="margin-bottom: -10px;">
+            <h2>Asignar roles</h2>
+          </label>
+          <div class="p-grid">
+            <div class="p-col-6" *ngFor="let rol of roles">
+              <p-checkbox id="{{rol.rolNombre}}" name="{{rol.rolNombre}}" value="{{rol.rolId}}"
+                [(ngModel)]="selectedValues" label="{{rol.rolNombre}}">
+              </p-checkbox>
+            </div>
+          </div>
+        </div>
+        <p></p>
+        <div class="p-field">
+          <label class="p-mb-3" style="margin-bottom: -10px;">
+            <h2>Asignar Lineas de negocio</h2>
+          </label>
+          <div class="p-grid">
+            <div class="p-col-6" *ngFor="let linea of lineasNegocios">
+              <p-checkbox id="{{linea.lineaNegocioId}}" name="{{linea.lineaNegocioNombre}}"
+                value="{{linea.lineaNegocioId}}" [(ngModel)]="selectedValuesLineaNegoio"
+                label="{{linea.lineaNegocioNombre}}">
+              </p-checkbox>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()">
+    </button>
+    <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" (click)="createOrUpdateUsuario()"
+      [disabled]="validOrInvalidBtn(vendedor)">
+    </button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

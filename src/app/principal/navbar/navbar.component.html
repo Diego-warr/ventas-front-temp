@@ -1,0 +1,92 @@
+<mat-drawer-container class="example-container" autosize>
+  <mat-drawer #drawer class="example-sidenav" mode="side" opened>
+    <div>
+      <mat-card class="example-card" [class.mat-elevation-z6]="true">
+        <img mat-card-image src="assets/img/logo/logo.png" class="image-head elevation-3" [routerLink]="'/'"
+          style="cursor: pointer">
+        <div class="content-head">
+          <h2>{{usuario}}</h2>
+          <p class="sub-title">AVIVEL SAC</p>
+        </div>
+        <mat-card-content>
+
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div>
+      <p-panelMenu [model]="items" [style]="{'width':'190px', 'font-size': '13px'}" [multiple]="false"></p-panelMenu>
+    </div>
+  </mat-drawer>
+
+  <div class="example-sidenav-content">
+    <mat-sidenav-container>
+      <mat-sidenav-content>
+        <mat-toolbar [class.mat-elevation-z6]="true">
+          <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon"
+            (click)="drawer.toggle()">
+            <i class="pi pi-bars"></i>
+          </button>
+          <span>Aviventas {{tituloHost}}</span>
+          <span class="example-spacer"></span>
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <i class="pi pi-user"></i>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="changePassword()">
+              <i class="pi pi-lock"></i> &nbsp;
+              <span>Cambiar contraseña</span>
+            </button>
+            <button mat-menu-item (click)="logout()">
+              <i class="pi pi-sign-out"></i> &nbsp;
+              <span>Cerrar sesión</span>
+            </button>
+          </mat-menu>
+        </mat-toolbar>
+        <div class="content">
+          <router-outlet></router-outlet>
+        </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>
+
+</mat-drawer-container>
+
+<p-dialog [(visible)]="changePasswordDialog" [style]="{width: '400px', height:'450px'}" [header]=titleDialog
+    [modal]="true" styleClass="p-fluid" [closable]="false">
+    <br>
+    <ng-template pTemplate="content">
+        <div class="formgrid grid">
+            <div class="field col">
+                <label for="canalVentaCodigo" class="titleFields">Contraseña actual:</label>
+                <p-password [(ngModel)]="contrasenaActual" [feedback]="false" placeholder="Ingrese su contraseña actual"></p-password>
+                <small class="p-error" *ngIf="!contrasenaActual">campo requerido*</small>
+            </div>
+        </div>
+        <div class="formgrid grid">
+            <div class="field col">
+                <label for="canalVentaDescripcion" class="titleFields">Nueva contraseña:</label>
+                <p-password [(ngModel)]="nuevaContrasena" [toggleMask]="true" placeholder="Ingrese la nueva contraseña"></p-password>
+                <small class="p-error" *ngIf="!nuevaContrasena">campo requerido*</small>
+                <small class="p-error" *ngIf="(!!contrasenaActual && !!nuevaContrasena!) && (contrasenaActual === nuevaContrasena)">
+                       La contraseña no puede ser igual a la actual*</small><br>
+                <small class="p-error" *ngIf="(!!nuevaContrasena && !!repetirNuevaContrasena) && (this.nuevaContrasena != this.repetirNuevaContrasena)">
+                        Las nuevas contraseñas deben coincidir</small>
+            </div>
+        </div>
+        <div class="formgrid grid">
+          <div class="field col">
+              <label for="canalVentaDescripcion" class="titleFields">Repetir nueva contraseña:</label>
+              <p-password [(ngModel)]="repetirNuevaContrasena" [toggleMask]="true" placeholder="Repita su nueva contraseña"></p-password>
+              <small class="p-error" *ngIf="!repetirNuevaContrasena">campo requerido*</small><br>
+              <small class="p-error" *ngIf="(!!nuevaContrasena && !!repetirNuevaContrasena) && (this.nuevaContrasena != this.repetirNuevaContrasena)">
+                        Las nuevas contraseñas deben coincidir</small>
+          </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer" class="foo">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" [disabled]="validOrInvalidBtn()"
+            (click)="onSaveChangePassword()"></button>
+    </ng-template>
+</p-dialog>

@@ -1,0 +1,1663 @@
+<p-toast></p-toast>
+<div class="card tbOP">
+  <p-table
+    #dtOrdenes
+    [value]="ordenesPedidoPageableList"
+    [rows]="size"
+    sortMode="multiple"
+    [globalFilterFields]="[
+      'estado',
+      'fecha',
+      'semana',
+      'tipoOrden',
+      'numero',
+      'canalventa?.canalVentaDescripcion',
+      'cliente.clienteRazonSocial',
+      'clienteDestino.clienteRazonSocial',
+      'fechaVencimiento',
+      'ordenCompra',
+      'tienda',
+      'origen',
+      'fechaEntrega',
+      'horaEntrega',
+      'lugarEntrega',
+      'observaciones',
+      'lote',
+      'vendedor',
+      'fechaCreacion'
+    ]"
+    [rowHover]="true"
+    selectionMode="single"
+    [(selection)]="selectedOrden1"
+    dataKey="numero"
+    [scrollable]="true"
+    responsiveLayout="scroll"
+    [loading]="loadingOrdenes"
+    [totalRecords]="totalElements"
+    [pageLinks]="totalPages"
+    [showPageLinks]="true"
+    [first]="page"
+    [showCurrentPageReport]="true"
+  >
+    <ng-template pTemplate="caption">
+      <div class="grid" fxLayoutAlign="space-between center">
+        <div class="col-12 md:col-12 lg:col-10 divUno">
+          <div class="grid">
+            <div class="col-12 md:col-12 lg:col-8">
+              <div class="grid">
+                <div class="col-12 md:col-2 lg:col-2 flex">
+                  <p-dropdown
+                    class="p-select"
+                    [style]="{ width: '100%' }"
+                    placeholder="Filtrar por:"
+                    [options]="filtroSelect"
+                    [(ngModel)]="indexSelected"
+                    optionLabel="label"
+                    optionValue="id"
+                    (onChange)="onChangeFiltroSelect($event)"
+                  >
+                  </p-dropdown>
+                </div>
+                <div class="col-12 md:col-3 lg:col-3 flex inputFilter">
+                  <input
+                    [(ngModel)]="filterName"
+                    pInputText
+                    type="text"
+                    placeholder="Ingrese el dato a buscar"
+                    [disabled]="inputFiltroDisabled()"
+                    [hidden]="hideInputFiltro"
+                  />
+                  <p-dropdown
+                    class="p-select"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="almacenSedeOrigenDestinoId"
+                    placeholder="Seleccione Almac&eacute;n"
+                    [options]="almacenesSedeList"
+                    optionLabel="almacenSedeDescripcion"
+                    optionValue="almacenSedeId"
+                    (onChange)="onChangeAlmacenSedeFiltro($event)"
+                    [hidden]="hideSelectAlmacenOrigenDestino"
+                  >
+                  </p-dropdown>
+                  <p-dropdown
+                    class="p-select"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="tipoOrdenFilterSelect"
+                    placeholder="Seleccione Tipo Orden"
+                    [options]="tipoOrdenPedidoList"
+                    optionLabel="description"
+                    optionValue="id"
+                    (onChange)="onChangeTipoOrdenFilterSelect($event)"
+                    [hidden]="hideTipoOrdenFilter"
+                  >
+                  </p-dropdown>
+                  <p-dropdown
+                    class="p-select"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="estadosOrdenFilterSelect"
+                    placeholder="Seleccione el Estado"
+                    [options]="estadosOPList"
+                    optionLabel="description"
+                    optionValue="id"
+                    (onChange)="onChangeEstadosFilterSelect($event)"
+                    [hidden]="hideEstadosFilter"
+                  >
+                  </p-dropdown>
+                </div>
+                <div class="col-12 md:col-1 lg:col-1 flex">
+                  <button
+                    pButton
+                    pRipple
+                    [style]="{ width: '100%' }"
+                    label=""
+                    icon="pi pi-search"
+                    class="p-button-primary p-mr-2"
+                    (click)="buscarOrdenes(filterName, index, 0, size, $event)"
+                    [disabled]="btnBuscarDisabled()"
+                  ></button>
+                </div>
+                <div class="col-12 md:col-3 lg:col-3 flex">
+                  <p-dropdown
+                    class="p-select"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="canalVentaIdSelect"
+                    placeholder="Canal de Venta"
+                    [options]="canalVentaList"
+                    optionLabel="canalVentaDescripcion"
+                    optionValue="canalVentaId"
+                    (onChange)="onChangeCanalVentaFiltro($event)"
+                  >
+                  </p-dropdown>
+                </div>
+                <div class="col-12 md:col-3 lg:col-3 flex">
+                  <p-dropdown
+                    class="p-select"
+                    [style]="{ width: '100%' }"
+                    [(ngModel)]="usuarioIdSelect"
+                    [filter]="true"
+                    filterBy="nombres"
+                    [showClear]="true"
+                    placeholder="Vendedores"
+                    [options]="usuariosFilterList"
+                    optionLabel="nombres"
+                    optionValue="usuarioId"
+                    (onChange)="onChangeUsuarioFiltro($event)"
+                  >
+                  </p-dropdown>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 md:col-12 lg:col-4">
+              <div class="grid">
+                <div class="col-12 md:col-6 flex">
+                  <p-calendar
+                    #dateIni
+                    placeholder="Fecha inicial"
+                    [style]="{ width: '100%' }"
+                    class="p-calendario"
+                    [(ngModel)]="dateInicial"
+                    (showClear)="(true)"
+                    dateFormat="dd/mm/yy"
+                    [appendTo]="'body'"
+                    [showIcon]="true"
+                    inputId="icon"
+                  ></p-calendar>
+                </div>
+                <div class="col-12 md:col-6 flex">
+                  <p-calendar
+                    #dateFin
+                    placeholder="Fecha final"
+                    [style]="{ width: '100%' }"
+                    class="p-calendario"
+                    [(ngModel)]="dateFinal"
+                    (showClear)="(true)"
+                    (onSelect)="onSelectedDates()"
+                    dateFormat="dd/mm/yy"
+                    [appendTo]="'body'"
+                    [showIcon]="true"
+                    inputId="icon"
+                  ></p-calendar>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 md:col-12 lg:col-2">
+          <div class="grid">
+            <div class="col-12 md:col-12 lg:col-12 divUno">
+              <div class="grid">
+                <div class="col-12 md:col-5 lg:col-3 flex">
+                  <button
+                    pButton
+                    [style]="{ width: '100%' }"
+                    class="p-button-outlined"
+                    icon="pi pi-filter-slash"
+                    (click)="clearFilters(dtOrdenes)"
+                    pTooltip="Limpiar los filtros"
+                    tooltipPosition="top"
+                  ></button>
+                </div>
+                <div class="col-12 md:col-2 lg:col-3 btnField">
+                  <i
+                    *ngIf="spinnerOn == false; else elseSpinner"
+                    pButton
+                    pRipple
+                    icon="pi pi-spinner"
+                    style="font-size: 1rem"
+                    class="p-button-rounded p-button-primary"
+                    (click)="reloadListaOrdenes(dtOrdenes)"
+                    pTooltip="Actualizar lista de ordenes"
+                    tooltipPosition="top"
+                  >
+                  </i>
+                  <ng-template #elseSpinner>
+                    <p-progressSpinner
+                      styleClass="custom-spinner"
+                      [style]="{ width: '30px', height: '30px' }"
+                      strokeWidth="8"
+                      fill="var(--surface-ground)"
+                      animationDuration=".5s"
+                    >
+                    </p-progressSpinner>
+                  </ng-template>
+                </div>
+                <div class="col-12 md:col-5 lg:col-5 flex">
+                  <button
+                    pButton
+                    icon="pi pi-file"
+                    [style]="{ width: '100%' }"
+                    pTooltip="Nueva Orden de pedido"
+                    tooltipPosition="top"
+                    (click)="newOrdenPedido()"
+                  ></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      No hay ordenes de pedido que mostrar.
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th
+          id=""
+          style="width: 150px !important"
+          class="titleColumnTableOP"
+          pSortableColumn="estado"
+        >
+          Estado<p-sortIcon field="estado"></p-sortIcon>
+        </th>
+        <th
+          id=""
+          style="width: 150px !important"
+          class="titleColumnTableOP"
+          pSortableColumn="fecha"
+        >
+          Fecha<p-sortIcon field="fecha"></p-sortIcon>
+        </th>
+        <th
+          id=""
+          style="width: 150px !important"
+          class="titleColumnTableOP"
+          pSortableColumn="semana"
+        >
+          Semana<p-sortIcon field="semana"></p-sortIcon>
+        </th>
+        <th
+          id=""
+          style="width: 150px !important"
+          class="titleColumnTableOP"
+          pSortableColumn="tipoOrden"
+        >
+          Tipo<p-sortIcon field="tipoOrden"></p-sortIcon>
+        </th>
+        <th
+          id=""
+          style="width: 150px !important"
+          class="titleColumnTableOP"
+          pSortableColumn="numero"
+        >
+          N&uacute;mero<p-sortIcon field="numero"></p-sortIcon>
+        </th>
+        <th
+          id=""
+          class="titleColumnTableOP"
+          pSortableColumn="canalventa.canalVentaDescripcion"
+        >
+          Canal venta<p-sortIcon field="canalventa.canalVentaDescripcion">
+          </p-sortIcon>
+        </th>
+        <th
+          id=""
+          class="titleColumnTableOP"
+          pSortableColumn="tipoDocumento.descripcion"
+        >
+          Tipo Doc<p-sortIcon field="tipoDocumento.descripcion"> </p-sortIcon>
+        </th>
+        <th
+          id=""
+          class="titleColumnTableOP"
+          pSortableColumn="cliente.clienteRazonSocial"
+        >
+          Cliente en Comprobante<p-sortIcon
+            field="cliente.clienteRazonSocial"
+          ></p-sortIcon>
+        </th>
+        <th
+          id=""
+          class="titleColumnTableOP"
+          pSortableColumn="clienteDestino.clienteRazonSocial"
+        >
+          Cliente Real<p-sortIcon
+            field="clienteDestino.clienteRazonSocial"
+          ></p-sortIcon>
+        </th>
+        <th
+          id=""
+          class="titleColumnTableOP"
+          pSortableColumn="almacenSedeOrigenId.almacenSedeDescripcion"
+        >
+          Alm. Origen<p-sortIcon
+            field="almacenSedeOrigenId.almacenSedeDescripcion"
+          ></p-sortIcon>
+        </th>
+        <th
+          id=""
+          class="titleColumnTableOP"
+          pSortableColumn="almacenSedeDestinoId.almacenSedeDescripcion"
+        >
+          Alm. Destino<p-sortIcon
+            field="almacenSedeDestinoId.almacenSedeDescripcion"
+          ></p-sortIcon>
+        </th>
+        <th id="" class="titleColumnTableOP" pSortableColumn="fechaVencimiento">
+          Fecha vencimiento<p-sortIcon field="fechaVencimiento"> </p-sortIcon>
+        </th>
+        <th id="" class="titleColumnTableOP" pSortableColumn="ordenCompra">
+          Orden compra<p-sortIcon field="ordenCompra"></p-sortIcon>
+        </th>
+        <th id="" class="titleColumnTableOP" pSortableColumn="tienda">
+          Tienda<p-sortIcon field="tienda"></p-sortIcon>
+        </th>
+        <th
+          id=""
+          style="width: 150px !important"
+          class="titleColumnTableOP"
+          pSortableColumn="origen"
+        >
+          Origen<p-sortIcon field="origen"></p-sortIcon>
+        </th>
+        <th
+          id=""
+          style="width: 150px !important"
+          class="titleColumnTableOP"
+          pSortableColumn="fechaEntrega"
+        >
+          Fecha entrega<p-sortIcon field="fechaEntrega"></p-sortIcon>
+        </th>
+        <th
+          id=""
+          style="width: 150px !important"
+          class="titleColumnTableOP"
+          pSortableColumn="horaEntrega"
+        >
+          Hora entrega<p-sortIcon field="horaEntrega"></p-sortIcon>
+        </th>
+        <th
+          id=""
+          style="width: 150px !important"
+          class="titleColumnTableOP"
+          pSortableColumn="lugarEntrega"
+        >
+          Lugar entrega<p-sortIcon field="lugarEntrega"></p-sortIcon>
+        </th>
+        <th id="" class="titleColumnTableOP" pSortableColumn="observaciones">
+          Observaciones<p-sortIcon field="observaciones"></p-sortIcon>
+        </th>
+        <th
+          id=""
+          style="width: 150px !important"
+          class="titleColumnTableOP"
+          pSortableColumn="lote"
+        >
+          Lote<p-sortIcon field="lote"></p-sortIcon>
+        </th>
+        <th
+          id=""
+          style="width: 150px !important"
+          class="titleColumnTableOP"
+          pSortableColumn="vendedor"
+        >
+          Vendedor<p-sortIcon field="vendedor"></p-sortIcon>
+        </th>
+        <th
+          id=""
+          style="width: 150px !important"
+          class="titleColumnTableOP"
+          pSortableColumn="fechaCreacion"
+        >
+          Fecha creación<p-sortIcon field="fechaCreacion"></p-sortIcon>
+        </th>
+        <th
+          id=""
+          style="width: 150px !important; justify-content: center"
+          class="titleColumnTableOP"
+          alignFrozen="right"
+          pFrozenColumn
+          [frozen]="true"
+        >
+          Acciones
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-orden let-rowIndex="rowIndex">
+      <tr [pSelectableRow]="orden">
+        <td class="dataTableOP">
+          {{ orden.estado }}
+        </td>
+        <td class="dataTableOP">{{ orden.fecha | customDate }}</td>
+        <td class="dataTableOP">{{ orden.semana }}</td>
+        <td class="dataTableOP">{{ orden.tipoOrden }}</td>
+        <td class="dataTableOP">{{ orden.serie + "-" + orden.numero }}</td>
+        <td class="dataTableOP">
+          {{ orden.canalventa?.canalVentaDescripcion }}
+        </td>
+        <td class="dataTableOP">{{ orden.tipoDocumento?.descripcion }}</td>
+        <td class="dataTableOP">{{ orden.cliente?.clienteRazonSocial }}</td>
+        <td class="dataTableOP">
+          {{ orden.clienteDestino?.clienteRazonSocial }}
+        </td>
+        <td class="dataTableOP">
+          {{ orden.almacenSedeOrigenId?.almacenSedeDescripcion }}
+        </td>
+        <td class="dataTableOP">
+          {{ orden.almacenSedeDestinoId?.almacenSedeDescripcion }}
+        </td>
+        <td class="dataTableOP">{{ orden.fechaVencimiento | customDate }}</td>
+        <td class="dataTableOP">{{ orden.ordenCompra }}</td>
+        <td class="dataTableOP">{{ orden.tienda }}</td>
+        <td class="dataTableOP">{{ orden.origen }}</td>
+        <td class="dataTableOP">{{ orden.fechaEntrega | customDate }}</td>
+        <td class="dataTableOP">{{ orden.horaEntrega }}</td>
+        <td class="dataTableOP">{{ orden.lugarEntrega }}</td>
+        <td class="dataTableOP">{{ orden.observaciones }}</td>
+        <td class="dataTableOP">{{ orden.lote }}</td>
+        <td class="dataTableOP">
+          {{
+            orden.vendedor?.numeroDocumentoVendedor +
+              " " +
+              orden.vendedor?.nombreVendedor +
+              " " +
+              orden.vendedor?.apellidosVendedor
+          }}
+        </td>
+        <td class="dataTableOP">{{ orden.fechaCreacion | customDateTime }}</td>
+        <td
+          style="justify-content: center"
+          alignFrozen="right"
+          pFrozenColumn
+          [frozen]="frozenInColumnAcciones"
+        >
+          <button
+            pButton
+            pRipple
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-warning icon-action p-button-sm"
+            pTooltip="Editar Orden de Pedido"
+            tooltipPosition="top"
+            (click)="setEditOrdenPedido(orden)"
+            *ngIf="
+              orden.vendedor.permitirEditar == 1 ||
+              (orden.vendedor.permitirEditar == 0 &&
+                orden.usuarioCreacion == this.usuario) ||
+              this.roles.includes('ADMIN')
+            "
+          ></button>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-list"
+            class="p-button-rounded p-button-secondary p-button-sm icon-action"
+            pTooltip="Detalle de la Orden de Pedido"
+            tooltipPosition="top"
+            (click)="setDetallesDeOrden(orden)"
+          ></button>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-times"
+            class="p-button-rounded p-button-danger p-button-sm icon-action"
+            pTooltip="Anular OP"
+            tooltipPosition="top"
+            (click)="anularOP(orden)"
+            *ngIf="
+              orden.vendedor.permitirEditar == 1 ||
+              (orden.vendedor.permitirEditar == 0 &&
+                orden.usuarioCreacion == this.usuario) ||
+              this.roles.includes('ADMIN')
+            "
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <p-paginator
+        #paginador
+        [rows]="size"
+        [totalRecords]="totalElements"
+        [rowsPerPageOptions]="[10, 20, 30]"
+        (onPageChange)="showPageFiltroOP($event)"
+      >
+      </p-paginator>
+      <div
+        *ngIf="totalElements != 0; else elseBlock1"
+        class="p-d-flex p-ai-center p-jc-between"
+      >
+        Mostrando {{ firstRowOfPage + 1 }} a {{ lastRowOfPage }} de
+        {{ totalElements }} Ordenes de pedido encontrados.
+      </div>
+      <ng-template #elseBlock1>
+        <div class="p-d-flex p-ai-center p-jc-between">
+          Total: {{ totalElements }} Ordenes de pedido.
+        </div>
+      </ng-template>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  [(visible)]="detalleDialog"
+  [style]="{ width: '90vw' }"
+  [header]="titleDetalleDialog"
+  [modal]="true"
+  styleClass="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <div class="card p-4">
+      <p-table responsiveLayout="scroll" [value]="detalleOrdenCustomList">
+        <ng-template pTemplate="header">
+          <tr>
+            <th id="">Secuencia</th>
+            <th id="">C&oacute;digo</th>
+            <th id="">Art&iacute;culo</th>
+            <th id="">Unidades</th>
+            <th id="">UM2</th>
+            <th id="">Cantidad</th>
+            <th id="">UM1</th>
+            <th id="">Precio</th>
+            <th id="">Observaci&oacute;n</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-detalle>
+          <tr>
+            <td>{{ detalle.secuencia }}</td>
+            <td>{{ detalle.articulo.articuloCodigo }}</td>
+            <td>{{ detalle.articulo.articuloDescripcion }}</td>
+            <td>{{ detalle.unidades }}</td>
+            <td>
+              {{ detalle.articulo.unidadmedidaId2?.unidadMedidaNombreCorto! }}
+            </td>
+            <td>{{ detalle.cantidad }}</td>
+            <td>
+              {{ detalle.articulo.unidadMedidaId1?.unidadMedidaNombreCorto! }}
+            </td>
+            <td>{{ detalle.precio | currency : "" : simboloMoneda }}</td>
+            <td>{{ detalle.observacion }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="newOrdenPedidoDialog"
+  [style]="{ width: '94vw', height: '100vh' }"
+  [modal]="true"
+  styleClass="p-fluid"
+  class="pheader"
+  [closable]="false"
+>
+  <ng-template pTemplate="header">
+    <div class="col-12 md:col-12 lg:col-12" style="padding: 0 1rem 0 1rem">
+      <div class="grid" fxLayoutAlign="space-between center">
+        <div class="col-12 md:col-6 lg:col-6 flex">
+          <span style="font-size: large"
+            ><b>{{ titleNewOrdenPedido }}</b></span
+          >
+        </div>
+        <div class="col-1 md:col-1 lg:col-1" style="text-align: end">
+          <button
+            pButton
+            icon="pi pi-image"
+            pTooltip="Descargar OP en imagen"
+            tooltipPosition="top"
+            (click)="onClickDownloadPdf()"
+          ></button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="content">
+    <div id="contenido">
+      <p-divider align="left">
+        <span class="p-tag">Datos de la Orden de Pedido</span>
+      </p-divider>
+
+      <div class="grid">
+        <div class="col-12 md:col-4 lg:col-3 remopaddingtop">
+          <h5 class="titleFields">Tipo Orden</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+              id="tipoOrdenPedido"
+              class="p-select"
+              [style]="{ width: '100%' }"
+              placeholder="Seleccione el tipo de orden"
+              [options]="tipoOrdenPedidoList"
+              optionValue="id"
+              optionLabel="description"
+              [(ngModel)]="tipoOrdenPedido"
+              (onChange)="onChangeTipoOrden($event)"
+            >
+            </p-dropdown>
+          </div>
+          <small
+            id="tipoOrdenPedido-help"
+            class="p-error block"
+            *ngIf="!tipoOrdenPedido"
+            >campo requerido*</small
+          >
+        </div>
+        <div class="col-12 md:col-4 lg:col-3 remopaddingtop">
+          <h5 class="titleFields">Serie OP</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+              id="serieOp"
+              class="p-select"
+              [style]="{ width: '100%' }"
+              [(ngModel)]="serieOp"
+              placeholder="Seleccione la serie"
+              [options]="seriesNumeroDescription"
+              aria-describedby="serieOp-help"
+              optionLabel="descripcion"
+              optionValue="numero"
+              (onChange)="onChangeSerieOP($event)"
+              [disabled]="disableInputSerie()"
+            >
+            </p-dropdown>
+          </div>
+          <small id="serieOp-help" class="p-error block" *ngIf="!serieOp"
+            >campo requerido*</small
+          >
+        </div>
+        <div class="col-12 md:col-4 lg:col-3 remopaddingtop">
+          <h5 class="titleFields">Tipo Documento</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+              id="tipoDocumento"
+              class="p-select"
+              [style]="{ width: '100%' }"
+              [(ngModel)]="tipoDocumento"
+              placeholder="Seleccione el tipo de documento"
+              [options]="tipoDocumentList"
+              optionLabel="descripcion"
+              optionValue="tipodocumentoId"
+              aria-describedby="tipoDocumento-help"
+            >
+            </p-dropdown>
+          </div>
+          <small
+            id="tipoDocumento-help"
+            class="p-error block"
+            *ngIf="!tipoDocumento"
+            >campo requerido*</small
+          >
+        </div>
+        <div class="col-12 md:col-4 lg:col-2 remopaddingtop">
+          <h5 class="titleFields">Número</h5>
+          <div class="p-inputgroup">
+            <input
+              id=""
+              style="background-color: rgb(228, 250, 255)"
+              [(ngModel)]="numeroCorrelativo"
+              type="text"
+              placeholder="N&uacute;mero de serie"
+              pInputText
+              readonly
+            />
+          </div>
+        </div>
+        <div class="col-12 md:col-4 lg:col-1 remopaddingtop">
+          <h5 class="titleFields">Fecha</h5>
+          <div class="p-inputgroup">
+            <p-calendar
+              [style]="{ width: '100%' }"
+              (showClear)="(true)"
+              dateFormat="dd/mm/yy"
+              inputId="icon"
+              [(ngModel)]="fechaToday"
+              disabled="true"
+            >
+            </p-calendar>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="col-12 md:col-4 lg:col-3">
+          <h5 class="titleFields">Tienda</h5>
+          <div class="p-inputgroup">
+            <input
+              style="background-color: rgb(228, 250, 255)"
+              type="text"
+              [(ngModel)]="tienda"
+              placeholder="Ingrese la tienda"
+              pInputText
+            />
+          </div>
+        </div>
+        <div class="col-12 md:col-4 lg:col-3">
+          <h5 class="titleFields">Fecha vencimiento</h5>
+          <div class="p-inputgroup">
+            <p-calendar
+              [style]="{ width: '100%' }"
+              [(ngModel)]="fechaVencimiento"
+              (showClear)="(true)"
+              [readonlyInput]="true"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              inputId="icon"
+              placeholder="Ingrese la fecha de vencimiento"
+            >
+            </p-calendar>
+          </div>
+        </div>
+        <div class="col-12 md:col-4 lg:col-3">
+          <h5 class="titleFields">Lote</h5>
+          <div class="p-inputgroup">
+            <input
+              style="background-color: rgb(228, 250, 255)"
+              type="text"
+              [(ngModel)]="lote"
+              placeholder="Ingrese el lote"
+              pInputText
+            />
+          </div>
+        </div>
+        <div class="col-12 md:col-4 lg:col-3">
+          <h5 class="titleFields">OC</h5>
+          <div class="p-inputgroup">
+            <input
+              style="background-color: rgb(228, 250, 255)"
+              type="text"
+              [(ngModel)]="oc"
+              placeholder="Ingrese la OC"
+              pInputText
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="col-12 md:col-6 lg:col-5">
+          <h5 class="titleFields">Cliente a facturar</h5>
+          <div class="p-inputgroup">
+            <button
+              type="button"
+              pButton
+              pRipple
+              icon="pi pi-search"
+              pTooltip="Buscar cliente"
+              ptooltipPosition="top"
+              (click)="searchClient()"
+              [disabled]="disabledBtnSearchCliente()"
+            ></button>
+            <input
+              id="clienteAFacturar"
+              style="background-color: rgb(228, 250, 255)"
+              type="text"
+              [(ngModel)]="clienteAFacturar"
+              placeholder="Cliente a facturar"
+              aria-describedby="clienteAFacturar-help"
+              pInputText
+              readonly
+            />
+          </div>
+          <small
+            id="clienteAFacturar-help"
+            class="p-error block"
+            *ngIf="tipoOrdenPedido == 'OP' && !clienteAFacturar"
+            >campo requerido*</small
+          >
+        </div>
+        <div class="col-12 md:col-5 lg:col-6">
+          <h5 class="titleFields">Cliente destino real</h5>
+          <div class="p-inputgroup">
+            <input
+              id="clienteDestinoReal"
+              style="background-color: rgb(228, 250, 255)"
+              type="text"
+              [(ngModel)]="clienteDestinoReal"
+              placeholder="Cliente destino real"
+              aria-describedby="clienteDestinoReal-help"
+              pInputText
+              readonly
+            />
+          </div>
+          <small
+            id="clienteDestinoReal-help"
+            class="p-error block"
+            *ngIf="tipoOrdenPedido == 'OP' && !clienteDestinoReal"
+            >campo requerido*</small
+          >
+        </div>
+        <div class="casillero-container col-12 md:col-1 lg:col-1">
+          <h5 class="titleFields">¿Incluye casillero?</h5>
+          <div class="casillero-content p-inputgroup">
+            <p-checkbox
+              (onChange)="onChangeIncluyeCasillero($event)"
+              [(ngModel)]="chkIncluyeCasillero"
+              pTooltip="¿Incluye casillero?"
+              tooltipPosition="top"
+              [binary]="true"
+            >
+            </p-checkbox>
+          </div>
+          <!-- <small
+            id="clienteDestinoReal-help"
+            class="p-error block"
+            *ngIf="tipoOrdenPedido == 'OP' && !clienteDestinoReal"
+            >campo requerido*</small
+          > -->
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="col-12 md:col-4 lg:col-3">
+          <h5 class="titleFields">Alm. Sede origen</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+              id="almacenSedeOrigen"
+              class="p-select"
+              [style]="{ width: '100%' }"
+              placeholder="Seleccione el almacen"
+              [options]="almacenesSedeList"
+              [(ngModel)]="almacenSedeOrigen"
+              optionLabel="almacenSedeDescripcion"
+              optionValue="almacenSedeId"
+              [disabled]="disabledAlmacenSedeOrigen()"
+              aria-describedby="almacenSedeOrigen-help"
+            >
+            </p-dropdown>
+          </div>
+          <small
+            id="almacenSedeOrigen-help"
+            class="p-error block"
+            *ngIf="tipoOrdenPedido == 'RT' && !almacenSedeOrigen"
+            >campo requerido*</small
+          >
+        </div>
+        <div class="col-12 md:col-4 lg:col-3">
+          <h5 class="titleFields">Alm. Sede destino</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+              id="almacenSedeDestino"
+              class="p-select"
+              [style]="{ width: '100%' }"
+              placeholder="Seleccione el almacen"
+              [options]="almacenesSedeList"
+              [(ngModel)]="almacenSedeDestino"
+              optionLabel="almacenSedeDescripcion"
+              optionValue="almacenSedeId"
+              [disabled]="disabledAlmacenSedeDestino()"
+              aria-describedby="almacenSedeDestino-help"
+              (onChange)="setAlmacenSedeToDireccionEntrega($event)"
+            >
+            </p-dropdown>
+          </div>
+          <small
+            id="almacenSedeDestino-help"
+            class="p-error block"
+            *ngIf="tipoOrdenPedido == 'RT' && !almacenSedeDestino"
+            >campo requerido*</small
+          >
+        </div>
+        <div class="col-12 md:col-4 lg:col-3">
+          <h5 class="titleFields">Canal venta</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+              id="canalVenta"
+              class="p-select"
+              [style]="{ width: '100%' }"
+              placeholder="Seleccione el canal de venta"
+              [options]="canalVentaList"
+              optionLabel="canalVentaDescripcion"
+              optionValue="canalVentaId"
+              [(ngModel)]="canalVenta"
+              aria-describedby="canalVenta-help"
+            >
+            </p-dropdown>
+          </div>
+          <small id="canalVenta-help" class="p-error block" *ngIf="!canalVenta"
+            >campo requerido*</small
+          >
+        </div>
+        <div class="col-12 md:col-4 lg:col-3">
+          <h5 class="titleFields">Origen</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+              class="p-select"
+              [style]="{ width: '100%' }"
+              placeholder="Seleccione el origen"
+              [options]="origenList"
+              optionLabel="origenDescription"
+              optionValue="origenId"
+              [(ngModel)]="origen"
+            >
+            </p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="col-12 md:col-4 lg:col-3">
+          <h5 class="titleFields">Plantel</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+              class="p-select"
+              [style]="{ width: '100%' }"
+              placeholder="Seleccione el plantel"
+              [options]="plantelList"
+              optionLabel="plantelNombre"
+              optionValue="plantelId"
+              [(ngModel)]="plantel"
+            >
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="col-12 md:col-4 lg:col-2">
+          <h5 class="titleFields">Tipo Moneda</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+              class="p-select"
+              [style]="{ width: '100%' }"
+              placeholder="Seleccione tipo moneda"
+              [options]="tipoMonedaList"
+              optionLabel="descripcion"
+              optionValue="id"
+              [(ngModel)]="tipoMoneda"
+              (onChange)="onChangeTipoMoneda()"
+            >
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="col-12 md:col-4 lg:col-2">
+          <h5 class="titleFields">Fecha entrega</h5>
+          <div class="p-inputgroup">
+            <p-calendar
+              [style]="{ width: '100%' }"
+              (showClear)="(true)"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              inputId="icon"
+              [(ngModel)]="fechaEntrega"
+              [readonlyInput]="true"
+            >
+            </p-calendar>
+          </div>
+        </div>
+        <div class="col-12 md:col-4 lg:col-2">
+          <h5 class="titleFields">Hora de entrega</h5>
+          <div class="p-inputgroup">
+            <input
+              id="horaEntrega"
+              style="background-color: rgb(228, 250, 255)"
+              class="inputHoraEntrega"
+              type="time"
+              pInputText
+              [(ngModel)]="horaEntrega"
+              placeholder="Ingrese la hora de entrega"
+              readonlyInput="true"
+            />
+          </div>
+        </div>
+        <div class="col-12 md:col-4 lg:col-3">
+          <h5 class="titleFields">Vendedor</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+              id="vendedor"
+              class="p-select"
+              [(ngModel)]="vendedor"
+              [style]="{ width: '100%' }"
+              placeholder="Seleccione el vendedor"
+              [options]="vendedoresList"
+              optionLabel="nombres"
+              optionValue="usuarioId"
+              (onChange)="onVendedorSelected($event)"
+              aria-describedby="vendedor-help"
+            >
+            </p-dropdown>
+          </div>
+          <small id="vendedor-help" class="p-error block" *ngIf="!vendedor"
+            >campo requerido*</small
+          >
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="col-12 md:col-12 lg:col-12">
+          <h5 class="titleFields">Lugar de entrega</h5>
+          <div class="p-inputgroup">
+            <button
+              type="button"
+              pButton
+              pRipple
+              icon="pi pi-search"
+              pTooltip="Buscar"
+              ptooltipPosition="top"
+              (click)="searchLugarEntrega()"
+              [disabled]="disabledBtnSearchLugarEntrega()"
+            ></button>
+            <input
+              id="lugarEntrega"
+              style="background-color: rgb(228, 250, 255)"
+              type="text"
+              [(ngModel)]="lugarEntrega"
+              placeholder="Ingrese el lugar de entrega"
+              pInputText
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="col-12 md:col-12 lg:col-12 remopaddingbotton">
+          <h5 class="titleFields">Observaciones</h5>
+          <div class="p-inputgroup">
+            <input
+              id=""
+              style="background-color: rgb(228, 250, 255)"
+              type="text"
+              [(ngModel)]="observacion"
+              placeholder="Ingrese la observación"
+              pInputText
+            />
+          </div>
+        </div>
+      </div>
+      <p-divider align="left">
+        <span class="p-tag">Detalles de la Orden de Pedido</span>
+      </p-divider>
+
+      <p-table
+        #dtNewOrdenes
+        [resizableColumns]="true"
+        styleClass="p-datatable-sm"
+        responsiveLayout="scroll"
+        [reorderableColumns]="true"
+        [value]="detalleOPItemsList"
+        [rows]="10"
+        [rowHover]="true"
+        dataKey="id"
+      >
+        <ng-template pTemplate="caption">
+          <div class="grid">
+            <div class="col-12 md:col-4 lg:col-2">
+              <h5 class="titleFields">Código</h5>
+              <div class="p-inputgroup">
+                <button
+                  type="button"
+                  pButton
+                  pRipple
+                  icon="pi pi-search"
+                  (click)="searchArticulo()"
+                  pTooltip="Buscar código del artículo"
+                  tooltipPosition="top"
+                  [disabled]="onArticuloDisable()"
+                ></button>
+                <input
+                  id="codigoDetalle"
+                  style="background-color: rgb(228, 250, 255)"
+                  type="text"
+                  [(ngModel)]="codigoDetalle"
+                  pInputText
+                  placeholder="Buscar el código"
+                  aria-describedby="codigoDetalle-help"
+                  readonly
+                />
+              </div>
+              <small
+                id="codigoDetalle-help"
+                class="p-error"
+                *ngIf="detalleOPItemsList.length == 0"
+                >campo requerido*</small
+              >
+            </div>
+            <div
+              *ngIf="chkOperacionGratuita != true; else elseArtDescripcion"
+              class="col-11 md:col-7 lg:col-5"
+            >
+              <h5 class="titleFields">Articulo descripción</h5>
+              <div class="p-inputgroup">
+                <input
+                  id=""
+                  [(ngModel)]="articuloDescripcionDetalle"
+                  type="text"
+                  [style]="{ width: '100%' }"
+                  placeholder="Descripción del artículo"
+                  pInputText
+                  readonly
+                />
+              </div>
+            </div>
+            <ng-template #elseArtDescripcion>
+              <div class="col-12 md:col-8 lg:col-5">
+                <h5 class="titleFields">Articulo descripción</h5>
+                <div class="p-inputgroup">
+                  <input
+                    id=""
+                    [(ngModel)]="articuloDescripcionDetalle"
+                    type="text"
+                    [style]="{ width: '100%' }"
+                    placeholder="Descripción del artículo"
+                    pInputText
+                    readonly
+                  />
+                </div>
+              </div>
+            </ng-template>
+            <div class="col-1 md:col-1 lg:col-1">
+              <h5 class="titleFields">¿Op. Gratuita?</h5>
+              <div class="field-checkbox chkOG">
+                <p-checkbox
+                  (onChange)="onChangeOperacionGratuitaChk($event)"
+                  [(ngModel)]="chkOperacionGratuita"
+                  pTooltip="¿Es Operaci&oacute;n gratuita?"
+                  tooltipPosition="top"
+                  [binary]="true"
+                >
+                </p-checkbox>
+              </div>
+            </div>
+            <div
+              class="col-11 md:col-5 lg:col-2"
+              [hidden]="hideOperacionGratuita"
+            >
+              <h5 class="titleFields">Operaci&oacute;n gratuita</h5>
+              <div class="p-inputgroup">
+                <p-dropdown
+                  id="vendedor"
+                  class="p-select"
+                  [(ngModel)]="operacionGratuita"
+                  [style]="{ width: '100%' }"
+                  placeholder="Seleccione operaci&oacute;n gratuita"
+                  [options]="operacionGratuitaList"
+                  optionLabel="descripcion"
+                  optionValue="descripcion"
+                  (onChange)="onSelectOperacionGratuita($event)"
+                  aria-describedby="vendedor-help"
+                >
+                </p-dropdown>
+              </div>
+              <small
+                id="vendedor-help"
+                class="p-error block"
+                *ngIf="
+                  chkOperacionGratuita == true && operacionGratuita == null
+                "
+                >campo requerido*</small
+              >
+            </div>
+            <div
+              *ngIf="chkOperacionGratuita != true; else elseUM2"
+              class="col-12 md:col-4 lg:col-2"
+            >
+              <h5 class="titleFields">
+                Unidades(UM2) <b>{{ nombreCortoUM2 }}</b>
+              </h5>
+              <div class="p-inputgroup">
+                <input
+                  type="number"
+                  pInputText
+                  (keypress)="decimalFilter($event)"
+                  style="background-color: rgb(228, 250, 255)"
+                  placeholder="Ingrese la unidad"
+                  [(ngModel)]="um2Detalle"
+                  [disabled]="onUnidadDisable()"
+                />
+              </div>
+            </div>
+            <ng-template #elseUM2>
+              <div class="col-12 md:col-3 lg:col-1 umd2">
+                <h5 class="titleFields">
+                  (UM2) <b>{{ nombreCortoUM2 }}</b>
+                </h5>
+                <div class="p-inputgroup">
+                  <input
+                    type="number"
+                    pInputText
+                    (keypress)="decimalFilter($event)"
+                    style="background-color: rgb(228, 250, 255)"
+                    placeholder="Unidades"
+                    [(ngModel)]="um2Detalle"
+                    [disabled]="onUnidadDisable()"
+                  />
+                </div>
+              </div>
+            </ng-template>
+            <div
+              *ngIf="chkOperacionGratuita != true; else elseUM1"
+              class="col-12 md:col-4 lg:col-2"
+            >
+              <h5 class="titleFields">
+                Cantidad(UM1) <b>{{ nombreCortoUM1 }}</b>
+              </h5>
+              <div class="p-inputgroup">
+                <input
+                  type="number"
+                  pInputText
+                  (keypress)="decimalFilter($event)"
+                  style="background-color: rgb(228, 250, 255)"
+                  placeholder="Ingrese la cantidad"
+                  [(ngModel)]="um1Detalle"
+                  [disabled]="onCantidadDisable()"
+                />
+              </div>
+            </div>
+            <ng-template #elseUM1>
+              <div class="col-12 md:col-3 lg:col-1">
+                <h5 class="titleFields">
+                  (UM1) <b>{{ nombreCortoUM1 }}</b>
+                </h5>
+                <div class="p-inputgroup">
+                  <input
+                    type="number"
+                    pInputText
+                    (keypress)="decimalFilter($event)"
+                    style="background-color: rgb(228, 250, 255)"
+                    placeholder="Cantidad"
+                    [(ngModel)]="um1Detalle"
+                    [disabled]="onCantidadDisable()"
+                  />
+                </div>
+              </div>
+            </ng-template>
+          </div>
+          <div class="grid">
+            <div class="col-12 md:col-12 lg:col-9">
+              <h5 class="titleFields">Observaciones</h5>
+              <div class="p-inputgroup">
+                <input
+                  id=""
+                  style="background-color: rgb(228, 250, 255)"
+                  [(ngModel)]="observacionDetalle"
+                  type="text"
+                  placeholder="Ingrese la observación del artículo detalle"
+                  pInputText
+                  [disabled]="onObsDisable()"
+                />
+              </div>
+            </div>
+            <div class="col-12 md:col-6 lg:col-2">
+              <h5 class="titleFields">Precio</h5>
+              <div class="p-inputgroup">
+                <input
+                  type="number"
+                  pInputText
+                  (keypress)="decimalFilter($event)"
+                  [ngStyle]="{ 'background-color': 'rgb(228, 250, 255)' }"
+                  [(ngModel)]="precioDetalle"
+                  placeholder="Ingrese el precio"
+                  [disabled]="onPrecioDisable()"
+                />
+              </div>
+            </div>
+            <div class="col-12 md:col-6 lg:col-1" fxLayoutAlign="center end">
+              <div class="p-inputgroup">
+                <button
+                  style="width: 100%"
+                  (click)="addArticuloToDetalleItems()"
+                  [disabled]="disableBtnAddArticulo()"
+                  pTooltip="Agregar artículo al detalle"
+                  tooltipPosition="top"
+                  type="button"
+                  pButton
+                  pRipple
+                  label="Agregar"
+                ></button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th id=""></th>
+            <th id="">Nº</th>
+            <th id="">Código</th>
+            <th id="">Descripción</th>
+            <th id="">UND</th>
+            <th id="">CANT</th>
+            <th id="">Precio</th>
+            <th>Peso promedio</th>
+            <th>Subtotal</th>
+            <th id="">Observación</th>
+            <th id="">Operaci&oacute;n gratuita</th>
+            <th id=""></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-detalleItem let-index="rowIndex">
+          <tr [pReorderableRow]="index">
+            <td style="text-align: center">
+              <span
+                class="pi pi-bars"
+                [pReorderableRowHandle]="detalleItem"
+              ></span>
+            </td>
+            <td>{{ detalleItem.secuencia }}</td>
+            <td>{{ detalleItem.articuloCodigo }}</td>
+            <td>{{ detalleItem.articuloDescripcion }}</td>
+            <td>{{ detalleItem.unidades }}</td>
+            <td>{{ detalleItem.cantidad }}</td>
+            <td>
+              {{ detalleItem.precio ? simboloMoneda + detalleItem.precio : "" }}
+            </td>
+            <td>{{ detalleItem.pesoPromedio }}</td>
+            <td>
+              {{
+                subtotalItem(detalleItem)
+                  ? simboloMoneda + subtotalItem(detalleItem)
+                  : ""
+              }}
+            </td>
+            <td>{{ detalleItem.observacion }}</td>
+            <td>{{ detalleItem.operacionGratuita }}</td>
+            <td class="btnField">
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-warning icon-action p-button-sm"
+                pTooltip="Editar detalle"
+                tooltipPosition="top"
+                (click)="editItemDetalleOP(detalleItem, index)"
+              ></button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-danger icon-action p-button-sm"
+                pTooltip="Eliminar item del detalle de la orden de pedido"
+                tooltipPosition="top"
+                (click)="removeRow(index)"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="footer" let-columns>
+          <tr class="total-row">
+            <td colspan="7"></td>
+            <td>Total</td>
+            <td>{{totalAmountOrder()? simboloMoneda + totalAmountOrder()
+                  : ""}}</td>
+            <td colspan="3"></td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <p-divider></p-divider>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <div class="grid footer-container-dialog-order">
+      <div
+        class="footer-dialog-actions-order col-12 md:col-12 lg:col-12"
+        id="footerOP"
+      >
+        <div
+          class="grid container-dialog-actions-order"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+        >
+          <div
+            class="col-12 md:col-3 lg:col-2 flex container-dialog-actions-order"
+          >
+            <button
+              class="btnFooter"
+              pButton
+              [style]="{ width: '100%' }"
+              type="button"
+              label="Cancelar"
+              icon="pi pi-times"
+              (click)="hideDialogCreateOP()"
+            ></button>
+          </div>
+          <div class="col-12 md:col-3 lg:col-2 flex">
+            <button
+              pButton
+              [style]="{ width: '100%' }"
+              type="button"
+              class="btnFooter"
+              label="Guardar"
+              icon="pi pi-check"
+              (click)="createOrUpdateOP($event)"
+              [disabled]="validOrInvalidBtnCreate()"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  class="pprogress"
+  [showHeader]="false"
+  [modal]="true"
+  [(visible)]="progressBarDialog"
+  [style]="{ width: '90%', height: '3%' }"
+  [closable]="false"
+>
+  <p-progressBar mode="indeterminate"></p-progressBar>
+</p-dialog>
+
+<p-dialog
+  [modal]="true"
+  [(visible)]="searchClienteCustomDialog"
+  header="Busqueda de clientes"
+  [style]="{ width: '85%', height: '100%' }"
+  [closable]="false"
+>
+  <ng-template pTemplate="header">
+    <div class="col-12 md:col-12 lg:col-12 titlebuscarcliente">
+      <div class="grid" fxLayoutAlign="space-between center">
+        <div class="col-12 md:col-6 lg:col-6 flex">
+          <h2><b>B&Uacute;SQUEDA DE CLIENTES</b></h2>
+        </div>
+        <div class="col-12 md:col-6 lg:col-1 flex">
+          <button
+            pButton
+            [style]="{ width: '100%' }"
+            type="button"
+            icon="pi pi-times"
+            (click)="removeDataFiltered()"
+            class="p-button-sm"
+          ></button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <p-table
+    #dtCliCustom
+    [value]="clientesCustomAUXList"
+    selectionMode="single"
+    [rowHover]="true"
+    [scrollable]="true"
+    [loading]="loadingClientesCustom"
+    (onRowUnselect)="onRowClientSelected($event)"
+    [globalFilterFields]="[
+      'clienteRazonSocial',
+      'clienteNombreComercial',
+      'clienteNumeroDocumentoIdentidad'
+    ]"
+  >
+    <ng-template pTemplate="caption">
+      <div class="grid">
+        <div class="col-12 md:col-12 lg:col-8">
+          <div class="grid">
+            <div class="col-12 md:col-6 lg:col-6 flex">
+              <input
+                class="input"
+                [(ngModel)]="filterNameCliente"
+                placeholder="Buscar cliente por razón social"
+                pInputText
+                type="text"
+                [style]="{ width: '100%' }"
+                (input)="filterDataClientes(filterNameCliente)"
+                autofocus
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th id="" class="titleColumnTableOP">Razón Soc.</th>
+        <th id="" class="titleColumnTableOP">Tipo Doc Ident</th>
+        <th id="" class="titleColumnTableOP">Doc</th>
+        <th id="" class="titleColumnTableOP">Nombre Comerc</th>
+        <th id="" class="titleColumnTableOP">Dirección</th>
+        <th id="" class="titleColumnTableOP">Cli Real Doc</th>
+        <th id="" class="titleColumnTableOP">Cli Real Raz Soc</th>
+        <th id="" class="titleColumnTableOP">Cli Real Nombre Comerc</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-cliente>
+      <tr [pSelectableRow]="cliente">
+        <td>{{ cliente.clienteRazonSocial }}</td>
+        <td>
+          {{ cliente.tipoDocumentoIdentidadId.tipoDocIdentidadNombreCorto }}
+        </td>
+        <td>{{ cliente.clienteNumeroDocumentoIdentidad }}</td>
+        <td>{{ cliente.clienteNombreComercial }}</td>
+        <td>{{ cliente.clienteDireccion }}</td>
+        <td>{{ cliente.cliRealNroDoc }}</td>
+        <td>{{ cliente.cliRealRazonSocial }}</td>
+        <td>{{ cliente.cliRealNombreComercial }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div class="p-d-flex p-ai-center p-jc-between titleColumnTableOP">
+        Total:
+        {{ clientesCustomAUXList ? clientesCustomAUXList.length : 0 }} clientes.
+      </div>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<p-dialog
+  header="B&Uacute;SQUEDA DE ART&Iacute;CULOS"
+  [modal]="true"
+  [(visible)]="searchArticuloDialog"
+  [style]="{ width: '80%', height: '100%' }"
+>
+  <p-table
+    #dtArticuloCustom
+    [value]="articuloEnabledCustomList"
+    selectionMode="single"
+    [rowHover]="true"
+    [scrollable]="true"
+    [loading]="loadingArticulo"
+    (onRowUnselect)="onRowArticuloSelected($event)"
+    [globalFilterFields]="[
+      'articuloCodigo',
+      'articuloDescripcion',
+      'familiaDescripcion'
+    ]"
+  >
+    <ng-template pTemplate="caption">
+      <div class="grid">
+        <div class="col-12 md:col-12 lg:col-4">
+          <div class="grid">
+            <div class="col-12 md:col-12 lg:col-12 flex">
+              <input
+                [(ngModel)]="filterNameArticulo"
+                placeholder="Buscar por cualquier campo..."
+                pInputText
+                type="text"
+                [style]="{ width: '100%' }"
+                (input)="applyFilterArticuloGlobal($event, 'contains')"
+                autofocus
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th id="" class="titleColumnTableOP">Código</th>
+        <th id="" class="titleColumnTableOP">Descripción</th>
+        <th id="" class="titleColumnTableOP">Familia</th>
+        <th id="" class="titleColumnTableOP">UM1.</th>
+        <th id="" class="titleColumnTableOP">UM2</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-articulo>
+      <tr [pSelectableRow]="articulo">
+        <td>{{ articulo.articuloCodigo }}</td>
+        <td>{{ articulo.articuloDescripcion }}</td>
+        <td>{{ articulo.familiaDescripcion }}</td>
+        <td>{{ articulo.um1NombreCorto }}</td>
+        <td>{{ articulo.um2NombreCorto }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div class="p-d-flex p-ai-center p-jc-between titleColumnTableOP">
+        Total:
+        {{ articuloEnabledCustomList ? articuloEnabledCustomList.length : 0 }}
+        artículos.
+      </div>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<p-dialog
+  header="LUGAR DE ENTREGA"
+  [modal]="true"
+  [(visible)]="searchLugarEntregaDialog"
+  [style]="{ width: '90%', height: '100%' }"
+>
+  <p-table
+    #dtLugar
+    [value]="almacenesClienteList"
+    selectionMode="single"
+    [rowHover]="true"
+    [scrollable]="true"
+    [loading]="loadingLugarEntrega"
+    (onRowUnselect)="onRowLugarEntregaSelected($event)"
+    [globalFilterFields]="['descripcion', 'direccion', 'referencia']"
+  >
+    <ng-template pTemplate="caption">
+      <div class="grid inputLugarEntrega">
+        <div class="col-12 md:col-12 lg:col-4 inputLugarEntrega">
+          <div class="grid">
+            <div class="col-12 md:col-12 lg:col-12 flex inputLugarEntrega">
+              <input
+                [(ngModel)]="filterNameLugar"
+                placeholder="Buscar por cualquier campo..."
+                pInputText
+                type="text"
+                [style]="{ width: '100%' }"
+                (input)="applyFilterLugarGlobal($event, 'contains')"
+                autofocus
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th id="" class="titleColumnTableOP">Descripción</th>
+        <th id="" class="titleColumnTableOP">Dirección</th>
+        <th id="" class="titleColumnTableOP">Referencia</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-lugar>
+      <tr [pSelectableRow]="lugar">
+        <td>{{ lugar.descripcion }}</td>
+        <td>{{ lugar.direccion }}</td>
+        <td>{{ lugar.referencia }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div class="p-d-flex p-ai-center p-jc-between" class="titleColumnTableOP">
+        Total:
+        {{ almacenesClienteList ? almacenesClienteList.length : 0 }} lugares.
+      </div>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<p-confirmDialog
+  key="cd_validation_OP_CV"
+  [style]="{ width: '35vw' }"
+  [baseZIndex]="10000"
+  rejectButtonStyleClass="p-button-text"
+></p-confirmDialog>
+
+<p-confirmDialog
+  key="cd_validationPrecio_OP"
+  [style]="{ width: '35vw' }"
+  [baseZIndex]="10000"
+  rejectButtonStyleClass="p-button-text"
+></p-confirmDialog>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>

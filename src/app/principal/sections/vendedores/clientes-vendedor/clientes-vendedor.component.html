@@ -1,0 +1,189 @@
+<p-toast></p-toast>
+
+<div class="card">
+  <p-breadcrumb [model]="navigationItemsRoutes"></p-breadcrumb>
+
+  <div style="height: 12px;"></div>
+  <p-table #dt1
+           [value]="clientes"
+           responsiveLayout="scroll"
+           [rows]="10"
+           [paginator]="true"
+           [rowHover]="true"
+           [resizableColumns]="true"
+           styleClass="p-datatable-md"
+           dataKey="id"
+           currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros."
+           [showCurrentPageReport]="true"
+           [loading]="loadingClientesAsignados"
+           [globalFilterFields]="['nombreRepresentanteLegal','numDocumento','razonSocial','numDocumento']">
+    <ng-template pTemplate="caption">
+        <div class="grid">
+          <div class="col-12 md:12 lg:col-12">
+            <div class="grid" fxLayout="row" fxLayoutAlign="space-between center">
+              <div class="col-12 md:col-6 lg:col-3 flex">
+                <input [style]="{'width':'100%'}" placeholder="Buscar por razón social y nro doc." pInputText type="text" (input)="filtrarClientesAsignados($event , 'contains')"/>
+              </div>
+              <div class="col-12 md:col-6 lg:col-3 flex">
+                <button pButton pRipple
+                        [style]="{'width':'100%'}"
+                        label="Asignar Nuevo Cliente"
+                        class="p-button-success p-mr-2"
+                        (click)="showDialogAsignarClientes()">
+                  <i class="pi pi-plus-circle mr-1"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="titleColumnTable">Razón Social</th>
+        <th class="titleColumnTable">Nombre Comercial</th>
+        <th class="titleColumnTable">Nro. Documento</th>
+        <th class="titleColumnTable">Giro de Negocio</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-cliente>
+      <tr>
+        <td>
+          <button pButton pRipple
+                  class="p-button-text p-button-primary link-font-size"
+                  pTooltip="Ver Cliente"
+                  tooltipPosition="top"
+                  (click)="irVistaInformacionCliente(cliente)">
+            {{cliente.razonSocial}}
+            <i class='pi pi-external-link external-text-link'></i>
+          </button>
+
+        </td>
+        <td>{{cliente.nombreComercial}}</td>
+        <td>{{cliente.numDocumento}}</td>
+        <td>{{cliente.giroNegocio}}</td>
+        <td class="align-content-center">
+          <button pButton pRipple icon="pi pi-ban"
+                  class="p-button-text p-button-danger"
+                  pTooltip="Desasignar Cliente"
+                  tooltipPosition="top"
+                  (click)="desaignarClienteClick($event, cliente.clienteId)"
+          ></button>
+          <button pButton pRipple icon="pi pi-user-plus"
+                  class="p-button-text p-button-help"
+                  pTooltip="Reasignar cliente"
+                  tooltipPosition="top"
+                  (click)="openCloseModalReasignacionPortafolioClientes(cliente)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div class="p-d-flex p-ai-center p-jc-between">
+        Total: {{clientes ? clientes.length : 0 }} clientes.
+      </div>
+    </ng-template>
+  </p-table>
+
+  <p-dialog header="BUSCAR CLIENTE PARA ASIGNAR"
+            [modal]="true"
+            [(visible)]="displayBasic"
+            [style]="{width: '90%'}">
+    <p-table #dt
+             [value]="clientesSinAsignarByRazonSocial"
+             responsiveLayout="scroll"
+             styleClass="p-datatable-gridlines"
+             [rowHover]="true"
+             dataKey="clienteId"
+             [(selection)]="seleccionClientes"
+             currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros."
+             [showCurrentPageReport]="true"
+             [loading]="loading"
+             [globalFilterFields]="['nombreComercial','razonSocial','numDocumento']">
+      <ng-template pTemplate="caption">
+        <div class="grid">
+          <div class="col-12 md:col-12 lg:col-6">
+            <div class="grid">
+              <div class="col-12 md:col-6 lg:col-10 flex">
+                <input [(ngModel)]="filterName" placeholder="datos a buscar..." pInputText type="text" [style]="{'width':'100%'}" (input)="applyFilterGlobal($event , 'contains')"/>
+              </div>
+              <div class="col-12 md:col-6 lg:col-2 flex">
+                <button pButton pRipple label="" [style]="{'width':'100%', 'height':'100%'}" icon="pi pi-search" class="p-button-primary p-mr-2"
+                  (click)="buscarClientes(filterName)" [disabled]="btnBuscarDisabled()">
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="titleColumnTable">Nombre</th>
+          <th class="titleColumnTable">Razón social</th>
+          <th class="titleColumnTable">RUC/DNI</th>
+          <th class="titleColumnTable">Seleccionar</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-cliente>
+        <tr>
+          <td>{{cliente.nombreComercial}}</td>
+          <td>{{cliente.razonSocial}}</td>
+          <td>{{cliente.numDocumento}}</td>
+          <td>
+            <!--<p-checkbox name="{{cliente.clienteId}}"
+                        value="{{cliente.clienteId}}"
+                        [(ngModel)]="seleccionClientesId"></p-checkbox>-->
+            <p-tableCheckbox [value]="cliente"></p-tableCheckbox>
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+    <!-- <p-button label="Cargar más Clientes..." (onClick)="cargarMasClientesSinAsignar()"></p-button> -->
+    <ng-template pTemplate="footer">
+      <div class="grid" style="text-align: right;">
+        <div class="col-12 md:col-12 lg:col-12">
+          <div class="grid">
+            <div class="col-0 md:col-6 lg:col-9 flex"></div>
+            <div class="col-12 md:col-6 lg:col-3 flex">
+              <p-toggleButton
+                class="p-toggleButton"
+                [(ngModel)]="checked2"
+                onLabel="Guardar"
+                offLabel="Guardando..."
+                onIcon="pi pi-check-circle"
+                offIcon="pi pi-spin pi-spinner"
+                [style]="{'width':'100%'}"
+                (click)="guardarSeleccionClientes()"
+                [disabled]="deshabilitarBtnGuardar">
+              </p-toggleButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <p-toast key="toast_asignar"></p-toast>
+  <p-toast key="toast_desasignar"></p-toast>
+
+  <p-dialog header="Lista de vendedores"
+            [modal]="true"
+            [(visible)]="listaVendedoresDialog"
+            [style]="{width: '35vw'}">
+
+    <ng-template pTemplate="caption">
+      <p-dropdown placeholder="Seleccione el vendedor" [options]="vendedoresSelect" optionLabel="username" optionValue="usuarioId" (onChange)="onChangeVendedorSelect($event)"></p-dropdown>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        label="Guardar"
+        icon="pi pi-check-circle"
+        (click)="saveReasignarVendedorAOtro($event)"
+        [disabled]="btnGuardarListVendDisableb">
+      </p-button>
+    </ng-template>
+  </p-dialog>
+
+  <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

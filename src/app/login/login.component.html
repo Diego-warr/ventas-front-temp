@@ -1,0 +1,109 @@
+<!-- <mat-grid-list [cols]="mybreakpoint" rowHeight="100%" (window:resize)="handleSize($event)"> -->
+<diV class="container-fluid">
+  <div class="row h-100">
+    <div class="container-images-carousel col-12 p-0 md:col-6 lg:col-8">
+      <!-- <div class="grid"> -->
+      <!-- <div class="col-12 md:col-6 flex"> -->
+      <!-- <mat-grid-tile [rowspan]="rowSize" [colspan]="colSize"> -->
+      <!--     <img mat-card-image src="assets/img/logo/fondo_login_huevo.png" style="height: 100%;"> -->
+      <p-galleria
+        [value]="imgCarousel"
+        [responsiveOptions]="responsiveOptions"
+        [showThumbnails]="false"
+        [showThumbnailNavigators]="false"
+        [numVisible]="1"
+        [circular]="true"
+        [autoPlay]="true"
+        [transitionInterval]="2000"
+      >
+        <ng-template pTemplate="item" let-item>
+          <img [src]="item.url" style="width: 100%; height: 100vh" />
+        </ng-template>
+      </p-galleria>
+      <!-- </mat-grid-tile> -->
+      <!-- </div> -->
+      <!-- </div> -->
+    </div>
+    <div class="container-form-login col-12 p-0 md:col-6 lg:col-4">
+      <div class="h-100 d-flex justify-content-center align-items-center">
+        <!-- <div class="col-12 md:col-12 lg:col-12 flex"> -->
+        <!-- <mat-grid-tile> -->
+        <!-- <div fxLayout="row" fxLayoutAlign="center center"> -->
+        <!-- <div fxLayout="column" fxLayoutAlign="space-around center" style="width: 100%;"> -->
+        <div class="">
+          <mat-card style="width: 100%" [class.mat-elevation-z8]="true">
+            <div fxLayout="column" fxLayoutAlign="center center">
+              <img
+                mat-card-image
+                src="assets/img/logo/logo_aviventas.png"
+                style="
+                  height: 90%;
+                  width: 60%;
+                  align-self: center;
+                  margin-top: -30%;
+                "
+              />
+
+              <h2 style="margin-bottom: 0">Aviventas</h2>
+              <h2>{{ zona }}</h2>
+              <p>Sistema de ventas de Avivel</p>
+
+              <mat-form-field appearance="outline" style="width: 100%">
+                <mat-label>Usuario</mat-label>
+                <input
+                  matInput
+                  placeholder="Username"
+                  id="name"
+                  type="text"
+                  [formControl]="username"
+                />
+                <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+                <!--<mat-hint>{{ username.value }}</mat-hint>-->
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" style="width: 100%">
+                <mat-label>Contraseña</mat-label>
+                <input
+                  matInput
+                  [type]="hide ? 'password' : 'text'"
+                  [formControl]="password"
+                  (keyup.enter)="login($event)"
+                />
+                <button
+                  class="btn-eye"
+                  mat-icon-button
+                  matSuffix
+                  (click)="hide = !hide"
+                  [attr.aria-label]="'Hide password'"
+                  [attr.aria-pressed]="hide"
+                >
+                  <mat-icon>{{
+                    hide ? "visibility_off" : "visibility"
+                  }}</mat-icon>
+                </button>
+              </mat-form-field>
+
+              <mat-hint style="color: #df2f2f">
+                <p>{{ message.value }}</p>
+              </mat-hint>
+              <button
+                type="submit"
+                mat-raised-button
+                color="primary"
+                style="width: 100%; background-color: #f7770f"
+                (click)="login($event)"
+              >
+                Ingresar
+              </button>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+    <!-- </mat-grid-tile> -->
+    <!-- </div> -->
+    <!-- </div> -->
+    <!-- </div> -->
+  </div>
+  <!-- </mat-grid-list> --></diV
+>

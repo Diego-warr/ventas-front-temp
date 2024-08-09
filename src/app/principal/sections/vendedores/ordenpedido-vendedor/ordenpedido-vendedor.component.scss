@@ -1,0 +1,48 @@
+body {
+    padding: 2em;
+    font-family: -apple-system, BlinkMacSystemFont, “Segoe UI”, Roboto, Helvetica, Arial, sans-serif, “Apple Color Emoji”, “Segoe UI Emoji”, “Segoe UI Symbol”;
+}
+
+.cal {
+    width: 310px;
+}
+
+.nodata {
+    text-align: center !important;
+    color: #1780d7 !important;
+}
+
+input {
+    font-size: small;
+    width: 100%;
+}
+
+.p-select{
+    width: 100%;
+}
+
+.p-calendario{
+    width: 100%;
+}
+
+::ng-deep .p-datepicker table td {
+    padding: 0.2rem !important;
+  }
+
+  ::ng-deep .p-datepicker table td > span {
+    width: 1.5rem;
+    height: 2.1rem;
+  }
+
+  ::ng-deep .p-datepicker table {
+    font-size: 10pt;
+    margin: -0.143rem 0;
+  }
+
+  ::ng-deep .p-datepicker .p-datepicker-header {
+    padding: 0.3rem;
+  }
+
+  .titleColumnTable {
+    color: #1780d7 !important;
+  }

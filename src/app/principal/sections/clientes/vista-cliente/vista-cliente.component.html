@@ -1,0 +1,1255 @@
+<p-toast></p-toast>
+
+<p-breadcrumb [model]="navigationItmesRoutes"></p-breadcrumb>
+
+<p-panel [showHeader]="false">
+  <p-tabView>
+    <p-tabPanel header="Datos de Cliente">
+      <div class="grid">
+        <div style="text-align: right" class="col-12 md:col-12 cssbtnagregar">
+          <button
+            pButton
+            icon="pi pi-save"
+            pTooltip="Guardar"
+            tooltipPosition="top"
+            (click)="createOrUpdateDatosClientes(cliente)"
+            [disabled]="disabledBtnSaveEdit()"
+          ></button>
+        </div>
+      </div>
+
+      <p-divider class="divisor" align="left">
+        <span class="p-tag">Informaci&oacute;n B&aacute;sica del cliente</span>
+      </p-divider>
+
+      <div class="grid divPadding">
+        <div class="col-12 md:col-3">
+          <h5 class="titleFields">Tipo de persona</h5>
+          <p-dropdown
+            class="p-select"
+            [style]="{ width: '100%' }"
+            [options]="tipoPersonaList"
+            placeholder="Seleccione tipo de persona"
+            [(ngModel)]="tipoPersonaFromCliente"
+            optionLabel="tipoPersonaDescripcion"
+            optionValue="tipoPersonaId"
+            (onChange)="onChangeTipoPersona($event)">
+          </p-dropdown>
+        </div>
+        <div class="col-12 md:col-3">
+          <h5 class="titleFields">Apellido Paterno</h5>
+          <div class="p-inputgroup">
+            <input
+              id="apellidoPaterno"
+              [(ngModel)]="apellidoPaterno"
+              type="text"
+              pInputText
+              placeholder="Ingrese el apellido paterno"
+              value="{{ cliente?.apellidoPaterno }}"
+              (input)="setRazonSocialWhenPersNatural()"
+              (ngModelChange)="apellidoPaterno = $event.toUpperCase()"
+              style="background-color: rgb(228, 250, 255);"
+              [disabled]="disableOnTipoPersonaJ()"
+            />
+          </div>
+          <small class="p-error" *ngIf="tipoPersonaFromCliente == 'N' && !apellidoPaterno">campo requerido*</small>
+        </div>
+        <div class="col-12 md:col-3">
+          <h5 class="titleFields">Apellido Materno</h5>
+          <div class="p-inputgroup">
+            <input
+              id="apellidoMaterno"
+              type="text"
+              pInputText
+              placeholder="Ingrese el apellido materno"
+              [(ngModel)]="apellidoMaterno"
+              value="{{ cliente?.apellidoMaterno }}"
+              (input)="setRazonSocialWhenPersNatural()"
+              (ngModelChange)="apellidoMaterno = $event.toUpperCase()"
+              style="background-color: rgb(228, 250, 255);"
+              [disabled]="disableOnTipoPersonaJ()"
+            />
+          </div>
+          <small class="p-error" *ngIf="tipoPersonaFromCliente == 'N' && !apellidoMaterno">campo requerido*</small>
+        </div>
+        <div class="col-12 md:col-3">
+          <h5 class="titleFields">Primer Nombre</h5>
+          <div class="p-inputgroup">
+            <input
+              id="nombres"
+              type="text"
+              [(ngModel)]="primerNombre"
+              placeholder="Ingrese el primer nombre"
+              pInputText
+              (input)="setRazonSocialWhenPersNatural()"
+              (ngModelChange)="primerNombre = $event.toUpperCase()"
+              style="background-color: rgb(228, 250, 255);"
+              [disabled]="disableOnTipoPersonaJ()"
+            />
+          </div>
+          <small class="p-error" *ngIf="tipoPersonaFromCliente == 'N' && !primerNombre">campo requerido*</small>
+        </div>
+      </div>
+
+      <div class="grid divPadding">
+        <div class="col-12 md:col-3">
+          <h5 class="titleFields">Segundo Nombre</h5>
+          <div class="p-inputgroup">
+            <input
+              id="nombres"
+              type="text"
+              [(ngModel)]="segundoNombre"
+              placeholder="Ingrese el segundo nombre"
+              pInputText
+              style="background-color: rgb(228, 250, 255);"
+              (input)="setRazonSocialWhenPersNatural()"
+              (ngModelChange)="segundoNombre = $event.toUpperCase()"
+              [disabled]="disableOnTipoPersonaJ()"
+            />
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+          <h5 class="titleFields">Tercer Nombre</h5>
+          <div class="p-inputgroup">
+            <input
+              id="nombres"
+              type="text"
+              [(ngModel)]="tercerNombre"
+              placeholder="Ingrese el tercer nombre"
+              pInputText
+              style="background-color: rgb(228, 250, 255);"
+              (input)="setRazonSocialWhenPersNatural()"
+              (ngModelChange)="tercerNombre = $event.toUpperCase()"
+              [disabled]="disableOnTipoPersonaJ()"
+            />
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+          <h5 class="titleFields">Correo electrónico</h5>
+          <div class="p-inputgroup">
+            <input
+              id="correoElectronico"
+              type="text"
+              pInputText
+              [(ngModel)]="correoElectronico"
+              placeholder="Ingrese el correo electrónico"
+              (ngModelChange)="correoElectronico = $event.toUpperCase()"
+              style="background-color: rgb(228, 250, 255);"
+            />
+          </div>
+          <small class="p-error" *ngIf="tipoPersonaFromCliente === 'J' && correoElectronico.length==0">campo requerido*</small>
+        </div>
+        <div class="col-12 md:col-3">
+          <h5 class="titleFields">Estado civil</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+              class="p-select"
+              [style]="{ width: '100%' }"
+              [options]="estadoCivilList"
+              [(ngModel)]="estadoCivilDescripcionFromCliente"
+              placeholder="Seleccione estado civil"
+              optionLabel="estadoCivilDescripcion"
+              optionValue="estadoCivilDescripcion"
+            >
+            </p-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid divPadding">
+        <div class="col-12 md:col-3">
+          <h5 class="titleFields">Celular A</h5>
+          <div class="p-inputgroup">
+            <input
+              id=""
+              type="text"
+              pInputText
+              [(ngModel)]="celularA"
+              placeholder="Ingrese el n&uacute;mero de celular"
+              style="background-color: rgb(228, 250, 255);"
+            />
+          </div>
+          <small class="p-error" *ngIf="!celularA">campo requerido*</small>
+        </div>
+        <div class="col-12 md:col-3">
+          <h5 class="titleFields">Celular B</h5>
+          <div class="p-inputgroup">
+            <input
+              id=""
+              type="text"
+              pInputText
+              [(ngModel)]="celularB"
+              placeholder="Ingrese segundo n&uacute;mero de celular"
+              style="background-color: rgb(228, 250, 255);"
+            />
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+          <h5 class="titleFields">Teléfono 1</h5>
+          <div class="p-inputgroup">
+            <input
+              id="telefono2"
+              type="text"
+              pInputText
+              [(ngModel)]="telefono1"
+              placeholder="Ingrese el n&uacute;mero de tel&eacute;fono"/>
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+            <h5 class="titleFields">Docum. identidad Real</h5>
+            <div class="p-inputgroup">
+              <button
+                type="button"
+                pButton
+                pRipple
+                icon="pi pi-search"
+                pTooltip="Buscar cliente real"
+                (click)="searchClient()"
+                [disabled]="disabledBtnSearchClienteReal()"
+                ptooltipPosition="top">
+              </button>
+              <input
+                id="documentoIdentidadReal"
+                type="text"
+                pInputText
+                [(ngModel)]="documentoIdentidadReal"
+                placeholder="Buscar documento del cliente real"
+                value="{{ cliente?.clienteNumeroDocumentoIdentidadReal }}"
+                readonly/>
+            </div>
+        </div>
+      </div>
+
+      <div class="grid divPadding">
+        <div class="col-12 md:col-4 lg:col-3">
+          <h5 class="titleFields">Fecha nacimiento</h5>
+          <div class="p-inputgroup">
+            <p-calendar
+              [style]="{ width: '100%' }"
+              [(ngModel)]="fechaNacimiento"
+              (showClear)="true"
+              [readonlyInput]="false"
+              dateFormat="dd/mm/yy"
+              [monthNavigator]="true"
+              [yearNavigator]="true"
+              yearRange="1950:2023"
+              [showIcon]="true"
+              inputId="icon"
+              placeholder="Ingrese la fecha de vencimiento"
+            >
+            </p-calendar>
+          </div>
+          <small class="p-error" *ngIf="tipoPersonaFromCliente == 'N' && !fechaNacimiento">campo requerido*</small>
+        </div>
+      </div>
+
+      <p-divider align="left">
+        <span class="p-tag">Informaci&oacute;n Comercial</span>
+      </p-divider>
+
+      <div class="grid divPadding">
+        <div class="col-12 md:col-4">
+          <h5 class="titleFields">Nombre comercial</h5>
+          <div class="p-inputgroup">
+            <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
+            <input
+              id="nombreComercial"
+              type="text"
+              style="background-color: rgb(228, 250, 255);"
+              pInputText
+              [(ngModel)]="nombreComercial"
+              placeholder="Ingrese el nombre comercial"
+              (ngModelChange)="nombreComercial = $event.toUpperCase()"
+              [disabled]="disableOnTipoPersonaN()"
+            />
+          </div>
+        </div>
+        <div class="col-12 md:col-4">
+          <h5 class="titleFields">Razón social</h5>
+          <div class="p-inputgroup">
+            <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
+            <input
+              id="razonSocial"
+              type="text"
+              style="background-color: rgb(228, 250, 255);"
+              pInputText
+              [(ngModel)]="razonSocial"
+              placeholder="Ingrese la razón social"
+              (ngModelChange)="razonSocial = $event.toUpperCase()"
+              [disabled]="disableOnTipoPersonaN()"
+            />
+          </div>
+          <small class="p-error" *ngIf="tipoPersonaFromCliente == 'J' && !razonSocial">campo requerido*</small>
+        </div>
+        <div class="col-12 md:col-4">
+          <h5 class="titleFields">C&oacute;digo de cliente</h5>
+          <div class="p-inputgroup">
+            <input
+              id=""
+              type="text"
+              pInputText
+              placeholder="Código cliente 'Autogenerado'"
+              [(ngModel)]="codigoCliente"
+              required
+              readonly/>
+          </div>
+        </div>
+      </div>
+      <div class="grid divPadding">
+        <div class="col-12 md:col-4">
+          <h5 class="titleFields">Tipo de documento de identidad</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+              class="p-select"
+              [style]="{ width: '100%' }"
+              [options]="tipoDocumentoIdentidadList"
+              [(ngModel)]="tipoDocIdentidadIdFromCliente"
+              placeholder="Seleccione tipo documento de identidad"
+              optionLabel="tipoDocIdentidadDescripcion"
+              optionValue="tipoDocIdentidadId"
+              (onChange)="onChangeTipoDocumentoId($event)"
+            >
+            </p-dropdown>
+            <small class="p-error" *ngIf="!tipoDocIdentidadIdFromCliente">campo requerido*</small>
+          </div>
+        </div>
+        <div class="col-12 md:col-4">
+          <h5 class="titleFields">Número de documento</h5>
+          <div class="p-inputgroup">
+            <input
+              id="numDocumento"
+              type="text"
+              style="background-color: rgb(228, 250, 255);"
+              pInputText
+              [maxlength]="maxLengthNumDoc"
+              [(ngModel)]="numDocumento"
+              placeholder="Ingrese el número de documento"
+              value="{{ cliente?.numDocumento }}"
+            />
+          </div>
+          <small class="p-error" *ngIf="!numDocumento">campo requerido*</small>
+          <small class="p-error" *ngIf="tipoDocIdentidadIdFromCliente == 1 &&  numDocumento && numDocumento.length < 11">debe tener 11 d&iacute;gitos como m&iacute;nimo*</small>
+          <small class="p-error" *ngIf="tipoDocIdentidadIdFromCliente == 2 &&  numDocumento &&  numDocumento.length < 8">debe tener 8 d&iacute;gitos como m&iacute;nimo*</small>
+        </div>
+        <div class="col-12 md:col-4">
+          <h5 class="titleFields">Tipo</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+              class="p-select"
+              [style]="{ width: '100%' }"
+              [options]="tipoClienteList"
+              [(ngModel)]="tipoClienteFromCliente"
+              placeholder="Seleccione cliente tipo"
+              optionLabel="tipoClienteDescripcion"
+              optionValue="tipoClienteId"
+            >
+            </p-dropdown>
+          </div>
+          <small class="p-error" *ngIf="!tipoClienteFromCliente">campo requerido*</small>
+        </div>
+      </div>
+
+      <div class="grid divPadding">
+        <div class="col-12 md:col-4">
+          <h5 class="titleFields">Giro de negocio</h5>
+          <div class="p-inputgroup">
+            <input
+              id="giroNegocio"
+              type="text"
+              pInputText
+              [(ngModel)]="giroNegocio"
+              placeholder="Ingrese el giro del negocio"
+              (ngModelChange)="giroNegocio = $event.toUpperCase()"
+              required
+            />
+          </div>
+          <small class="p-error" *ngIf="!giroNegocio">campo requerido*</small>
+        </div>
+        <div class="col-12 md:col-4">
+          <h5 class="titleFields">Canal de venta</h5>
+          <p-dropdown
+            class="p-select"
+            [style]="{ width: '100%' }"
+            [options]="canalesVentaList"
+            [(ngModel)]="canalVentaIdFromCliente"
+            placeholder="Seleccione canal de venta"
+            optionLabel="canalVentaDescripcion"
+            optionValue="canalVentaId"
+          >
+          </p-dropdown>
+          <small class="p-error" *ngIf="!canalVentaIdFromCliente">campo requerido*</small>
+        </div>
+        <div class="col-12 md:col-4">
+          <h5 class="titleFields">Carpeta</h5>
+          <p-dropdown
+            class="p-select"
+            [style]="{ width: '100%' }"
+            [options]="carpetaList"
+            [(ngModel)]="carpetaIdFromCliente"
+            placeholder="Seleccione carpeta"
+            optionLabel="carpetaDescripcion"
+            optionValue="carpetaId"
+          >
+          </p-dropdown>
+        </div>
+      </div>
+      <div class="grid divPadding">
+        <div class="col-12 md:col-4">
+          <h5 class="titleFields">Código pagador</h5>
+          <div class="p-inputgroup">
+            <input
+              id="codigo"
+              type="text"
+              pInputText
+              [(ngModel)]="codigoPagador"
+              placeholder="Ingrese el código de pagador"
+              value="{{ cliente?.codigo }}"
+              style="background-color: rgb(228, 250, 255);"
+            />
+          </div>
+        </div>
+        <div class="col-12 md:col-4">
+          <h5 class="titleFields">Grupo de clientes</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+            class="p-select"
+            [options]="grupoClienteList"
+            optionValue="grupoclienteId"
+            optionLabel="descripcion"
+            [style]="{ width: '100%' }"
+            [(ngModel)]="grupoCliente"
+            placeholder="Seleccione el grupo de cliente"
+            >
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="col-12 md:col-4">
+          <h5 class="titleFields">Fax</h5>
+          <div class="p-inputgroup">
+            <input
+              type="text"
+              pInputText
+              [(ngModel)]="fax"
+              placeholder="Ingrese el n&uacute;mero de fax"/>
+          </div>
+        </div>
+      </div>
+
+      <p-divider align="left">
+        <span class="p-tag">Datos de pago</span>
+      </p-divider>
+
+      <div class="grid divPadding">
+        <div class="col-12 md:col-4">
+          <h5 class="titleFields">Tipo de moneda</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+            class="p-select"
+            [style]="{ width: '100%' }"
+            [options]="tipoMonedaList"
+            optionLabel="label"
+            optionValue="id"
+            [(ngModel)]="tipoMoneda"
+            placeholder="Seleccione el tipo de moneda"
+            >
+            </p-dropdown>
+          </div>
+          <small class="p-error" *ngIf="!tipoMoneda">campo requerido*</small>
+        </div>
+        <div class="col-12 md:col-4">
+          <h5  class="titleFields">C&oacute;digo condici&oacute;n de pago</h5>
+          <div class="p-inputgroup">
+            <p-dropdown
+            class="p-select"
+            [options]="condicionPagoList"
+            optionLabel="descripcion"
+            optionValue="condicionpagoId"
+            [style]="{ width: '100%' }"
+            [(ngModel)]="condicionPago"
+            placeholder="Seleccione el código de condicion de pago"
+            >
+            </p-dropdown>
+          </div>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Direcciones">
+      <p-panel header="DIRECCI&Oacute;N DE LA EMPRESA" [toggleable]="true">
+        <div style="text-align: right">
+          <button
+            pButton
+            icon="pi pi-plus"
+            pTooltip="Agregar dirección empresa"
+            tooltipPosition="top"
+            class="p-button-text p-button-rounded"
+            (click)="newDireccionEmpresa()"
+            [hidden]="hideAddDireccionEmpresa()"
+          ></button>
+        </div>
+        <p-table [value]="cliDirecEmpresaList" responsiveLayout="scroll">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Dirección</th>
+              <th>Departamento</th>
+              <th>Provincia</th>
+              <th>Distrito</th>
+              <th>Referencia</th>
+              <th>Acciones</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-cli>
+            <tr>
+              <td>{{ cli.direccion }}</td>
+              <td>{{ cli.departamento }}</td>
+              <td>{{ cli.provincia }}</td>
+              <td>{{ cli.distrito }}</td>
+              <td>{{ cli.referencia }}</td>
+              <td style="text-align: center">
+                <div class="grid">
+                  <div class="sm:col-6">
+                    <button
+                      pButton
+                      type="button"
+                      icon="pi pi-pencil"
+                      class="p-button-text p-button-rounded"
+                      (click)="editDireccionEmpresa(cli)"
+                      pTooltip="Editar dirección empresa"
+                      tooltipPosition="top"
+                    ></button>
+                  </div>
+                  <div class="sm:col-6">
+                    <button
+                      pButton
+                      type="button"
+                      icon="pi pi-map"
+                      class="p-button-text p-button-rounded"
+                      pTooltip="Ver dirección en mapa"
+                      tooltipPosition="top"
+                    ></button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-panel>
+
+      <div style="height: 12px"></div>
+
+      <p-panel header="DIRECCI&Oacute;N DE ENTREGA" [toggleable]="true">
+        <div style="text-align: right">
+          <button
+            pButton
+            icon="pi pi-plus"
+            pTooltip="Agregar dirección entrega"
+            tooltipPosition="top"
+            class="p-button-text p-button-rounded"
+            (click)="newDireccionEntrega()"
+          ></button>
+        </div>
+        <p-table [value]="listaAlmacenes" responsiveLayout="scroll">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Dirección</th>
+              <th>Departamento</th>
+              <th>Provincia</th>
+              <th>Distrito</th>
+              <th>Descripción</th>
+              <th>Latitud/Longitud</th>
+              <th>Acciones</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-almacen>
+            <tr>
+              <td>{{ almacen.direccion }}</td>
+              <td>{{ almacen.departamento }}</td>
+              <td>{{ almacen.provincia }}</td>
+              <td>{{ almacen.distrito }}</td>
+              <td>{{ almacen.descripcion }}</td>
+              <td>{{ almacen.latitud + " , " + almacen.longitud }}</td>
+              <td style="text-align: center">
+                <div class="grid">
+                  <div class="sm:col-6">
+                    <button
+                      pButton
+                      type="button"
+                      icon="pi pi-pencil"
+                      class="p-button-text p-button-rounded"
+                      (click)="editDireccionEntrega(almacen)"
+                      pTooltip="Editar dirección entrega"
+                      tooltipPosition="top"
+                    ></button>
+                  </div>
+                  <div class="sm:col-6">
+                    <button
+                      pButton
+                      type="button"
+                      icon="pi pi-map"
+                      class="p-button-text p-button-rounded"
+                      (click)="seeGoogleMapDireccionEntrega(almacen)"
+                      pTooltip="Ver dirección en mapa"
+                      tooltipPosition="top"
+                    ></button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-panel>
+    </p-tabPanel>
+
+    <p-tabPanel header="Informaci&oacute;n crediticia">
+      <div class="grid">
+        <div style="text-align: right" class="col-12 md:col-12 cssbtnagregar">
+          <button
+            pButton
+            icon="pi pi-save"
+            pTooltip="Guardar Información crediticia"
+            tooltipPosition="top"
+            (click)="createOrUpdateDatosClientes(cliente)"
+          ></button>
+        </div>
+      </div>
+      <div class="grid divPadding">
+        <div class="col-12 md:col-12 lg:col-12" style="padding-bottom: 0rem;">
+          <h5 class="titleFields">El cliente tiene cr&eacute;dito:</h5>
+          <div class="field col" style="padding: 0rem;">
+            <div>
+              <p-checkbox [(ngModel)]="tienescredito" [binary]="true" inputId="binary" (onChange)="onChangeCheckTieneCliente()"></p-checkbox>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-12 lg:col-12" style="padding-top: 0rem;">
+          <div class="grid">
+            <div class="col-12 md:col-12 lg:col-5">
+              <h5 class="titleFields">D&iacute;as de cr&eacute;dito:</h5>
+              <div class="p-inputgroup">
+                <p-inputNumber
+                    inputId="locale-user"
+                    [(ngModel)]="diasCredito"
+                    placeholder="Ingrese los d&iacute;as de cr&eacute;dito"
+                    [maxFractionDigits]="2"
+                    [disabled]="disabledDiasCredito">
+                </p-inputNumber>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-12 lg:col-12" style="padding-top: 0rem;">
+          <div class="grid">
+            <div class="col-12 md:col-12 lg:col-5">
+              <h5 class="titleFields">Linea de cr&eacute;dito:</h5>
+              <div class="p-inputgroup">
+                <p-inputNumber
+                  inputId="locale-user"
+                  [maxFractionDigits]="2"
+                  placeholder="Ingrese la linea de cr&eacute;dito"
+                  mode="currency"
+                  currency="PEN"
+                  [(ngModel)]="lineaCredito"
+                  [disabled]="disabledLineaCredito">
+                </p-inputNumber>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-12 lg:col-5" style="padding-top: 0rem;">
+            <h5 class="titleFields">Garant&iacute;a del cr&eacute;dito:</h5>
+            <div class="p-inputgroup">
+              <p-dropdown
+                class="p-select"
+                [style]="{ width: '100%' }"
+                placeholder="Seleccione la garant&iacute;a del cr&eacute;dito"
+                [(ngModel)]="garantiaCredito"
+                [options]="garantiaCreditoList"
+                optionLabel="descripcion"
+                optionValue="id"
+                [disabled]="disabledGarantCredito">
+              </p-dropdown>
+            </div>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-dialog
+    [modal]="true"
+    [(visible)]="searchClienteFacturadoDeDialog"
+    [style]="{ width: '85%', height: '100%' }"
+    [closable]="false">
+    <ng-template pTemplate="header">
+      <div class="col-12 md:col-12 lg:col-12 titlebuscarcliente">
+        <div class="grid" fxLayoutAlign="space-between center">
+          <div class="col-12 md:col-6 lg:col-6 flex">
+            <h2><b>B&Uacute;SQUEDA DE CLIENTES</b></h2>
+          </div>
+          <div class="col-12 md:col-6 lg:col-1 flex">
+            <button
+              pButton
+              [style]="{ width: '100%' }"
+              type="button"
+              icon="pi pi-times"
+              (click)="removeDataFiltered()"
+              class="p-button-sm">
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <p-table
+      #dtCliFacturadoDe
+      [value]="clientesFacturarList"
+      selectionMode="single"
+      [rowHover]="true"
+      [scrollable]="true"
+      [loading]="loadingClientesFacturadosDe"
+      (onRowUnselect)="onRowClientSelected($event)"
+      [globalFilterFields]="['clienteRazonSocial','clienteNombreComercial',
+                            'clienteNumeroDocumentoIdentidad','clienteNombres',
+                            'clienteApellidoPaterno','clienteApellidoMaterno']">
+      <ng-template pTemplate="caption">
+        <div class="grid">
+          <div class="col-12 md:col-12 lg:col-8">
+            <div class="grid">
+              <div class="col-12 md:col-6 lg:col-6 flex">
+                <input
+                  class="input"
+                  [(ngModel)]="filterNameClienteFacturado"
+                  placeholder="Buscar cliente por razón social"
+                  pInputText
+                  type="text"
+                  [style]="{ width: '100%' }"
+                  (input)="filterDataClientesFacturados(filterNameClienteFacturado)"
+                  autofocus/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="titleColumnTable">Nombre Comercial</th>
+          <th class="titleColumnTable">Razón Social</th>
+          <th class="titleColumnTable">Tipo Doc Identidad</th>
+          <th class="titleColumnTable">N&uacute;mero de doc</th>
+          <th class="titleColumnTable">Nombres y Apellidos</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-cliente>
+        <tr [pSelectableRow]="cliente">
+          <td>{{ cliente.clienteNombreComercial }}</td>
+          <td>
+            {{ cliente.clienteRazonSocial}}
+          </td>
+          <td>{{ cliente.tipoDocumentoIdentidadId.tipoDocIdentidadNombreCorto }}</td>
+          <td>{{ cliente.clienteNumeroDocumentoIdentidad }}</td>
+          <td>{{ cliente.clienteNombres+' '+cliente.clienteApellidoPaterno+' '+cliente.clienteApellidoMaterno }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="summary">
+        <div class="p-d-flex p-ai-center p-jc-between">
+          Total:
+          {{ clientesFacturarList ? clientesFacturarList.length : 0 }} clientes.
+        </div>
+      </ng-template>
+    </p-table>
+  </p-dialog>
+
+    <p-dialog
+      [(visible)]="direccionEmpresaDialog"
+      [style]="{ width: '500px' }"
+      [header]="titleDireccionEmpresa"
+      [modal]="true"
+      styleClass="p-fluid"
+      [closable]="false"
+    >
+      <ng-template pTemplate="content">
+        <br />
+        <br />
+        <div class="grid">
+          <div class="col">
+            <div class="formgrid grid">
+              <div class="field col">
+                <label for="">Dirección</label>
+                <input
+                  type="text"
+                  style="background-color: rgb(228, 250, 255);"
+                  [(ngModel)]="direccionFromCliente"
+                  pInputText
+                  id=""
+                  required
+                  autofocus
+                />
+                <small class="p-error" *ngIf="!direccionFromCliente"
+                  >campo requerido*</small
+                >
+              </div>
+            </div>
+            <p></p>
+            <div class="formgrid grid">
+              <div class="field col">
+                <label for="secuencia">Departamento</label>
+                <p-dropdown
+                  class="p-select"
+                  [options]="departamentoList"
+                  [(ngModel)]="departamentoFromCliente"
+                  [style]="{ width: '100%' }"
+                  placeholder="Seleccione el departamento"
+                  (onChange)="onChangeDepartamentoCliente($event)"
+                >
+                </p-dropdown>
+                <small class="p-error" *ngIf="!departamentoFromCliente"
+                  >campo requerido*</small
+                >
+              </div>
+            </div>
+            <p></p>
+            <div class="formgrid grid">
+              <div class="field col">
+                <label for="">Provincia</label>
+                <p-dropdown
+                  class="p-select"
+                  [options]="provinciasList"
+                  [(ngModel)]="provinciaFromCliente"
+                  [style]="{ width: '100%' }"
+                  (onChange)="onChangeProvinciaCliente($event)"
+                  placeholder="Seleccione la provincia"
+                >
+                </p-dropdown>
+                <small class="p-error" *ngIf="!provinciaFromCliente"
+                  >campo requerido*</small
+                >
+              </div>
+            </div>
+            <p></p>
+            <div class="formgrid grid">
+              <div class="field col">
+                <label for="">Distrito</label>
+                <p-dropdown
+                  class="p-select"
+                  [options]="distritosList"
+                  [(ngModel)]="distritoFromCliente"
+                  [style]="{ width: '100%' }"
+                  placeholder="Seleccione el distrito"
+                >
+                </p-dropdown>
+                <small class="p-error" *ngIf="!distritoFromCliente"
+                  >campo requerido*</small
+                >
+              </div>
+            </div>
+            <div class="formgrid grid">
+              <div class="field col">
+                <label for="">Referencia</label>
+                <input
+                  type="text"
+                  style="background-color: rgb(228, 250, 255);"
+                  [(ngModel)]="referenciaFromCliente"
+                  pInputText
+                  id=""
+                  required
+                />
+                <small class="p-error" *ngIf="!referenciaFromCliente"
+                  >campo requerido*</small
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="footer">
+        <button
+          pButton
+          pRipple
+          label="Cancelar"
+          icon="pi pi-times"
+          class="p-button-text"
+          (click)="hideDialogDireccion()"
+        ></button>
+        <button
+          pButton
+          pRipple
+          label="Guardar"
+          icon="pi pi-check"
+          class="p-button-text"
+          (click)="createUpdateDireccionEmpresa()"
+          [disabled]="validOrInvalidBtnDireccion()"
+        ></button>
+      </ng-template>
+    </p-dialog>
+
+    <p-dialog
+      [(visible)]="mapDireccionEntregaDialog"
+      [style]="{ width: '100%', height: '100%' }"
+      [modal]="true"
+      [header]="titleDireccionEntregaDialog"
+      styleClass="p-fluid"
+      [closable]="true"
+    >
+      <ng-template pTemplate="content">
+        <div class="grid">
+          <agm-map
+            [latitude]="latitudeMapEntrega"
+            [longitude]="longitudeMapEntrega"
+            [zoom]="zoomMapEntrega"
+            [fullscreenControl]="true"
+            [streetViewControl]="true"
+            [mapTypeControl]="true"
+          >
+            <agm-marker
+              [latitude]="latitudeMapEntrega"
+              [longitude]="longitudeMapEntrega"
+            >
+              <agm-info-window>
+                <p><b>Dirección:</b> {{ direccionMapEntrega }}</p>
+                <p><b>Distrito:</b> {{ distritoMapEntrega }}</p>
+                <p><b>Descripción:</b> {{ descripcionMapEntrega }}</p>
+              </agm-info-window>
+            </agm-marker>
+          </agm-map>
+        </div>
+      </ng-template>
+    </p-dialog>
+
+    <p-dialog
+      [(visible)]="direccionEntregaDialog"
+      [style]="{ width: '500px', height: '750px' }"
+      [header]="titleDireccionEntrega"
+      [modal]="true"
+      styleClass="p-fluid"
+      [closable]="false"
+    >
+      <ng-template pTemplate="content">
+        <br />
+        <div class="grid">
+          <div class="col">
+            <div class="formgrid grid">
+              <div class="field col">
+                <label for="">Dirección</label>
+                <input
+                  type="text"
+                  [(ngModel)]="direccionEntrega"
+                  pInputText
+                  id=""
+                  required
+                  autofocus
+                />
+                <small class="p-error" *ngIf="!direccionEntrega"
+                  >campo requerido*</small
+                >
+              </div>
+            </div>
+            <div class="formgrid grid">
+              <div class="field col">
+                <label for="secuencia">Departamento</label>
+                <p-dropdown
+                  class="p-select"
+                  [options]="departamentoList"
+                  [(ngModel)]="departamentoEntrega"
+                  [style]="{ width: '100%' }"
+                  placeholder="Seleccione el departamento"
+                  (onChange)="onChangeDepartamentoCliente($event)"
+                >
+                </p-dropdown>
+                <small class="p-error" *ngIf="!departamentoEntrega"
+                  >campo requerido*</small
+                >
+              </div>
+            </div>
+            <p></p>
+            <div class="formgrid grid">
+              <div class="field col">
+                <label for="">Provincia</label>
+                <p-dropdown
+                  class="p-select"
+                  [options]="provinciasList"
+                  [(ngModel)]="provinciaEntrega"
+                  [style]="{ width: '100%' }"
+                  (onChange)="onChangeProvinciaCliente($event)"
+                  placeholder="Seleccione la provincia"
+                >
+                </p-dropdown>
+                <small class="p-error" *ngIf="!provinciaEntrega"
+                  >campo requerido*</small
+                >
+              </div>
+            </div>
+            <p></p>
+            <div class="formgrid grid">
+              <div class="field col">
+                <label for="">Distrito</label>
+                <p-dropdown
+                  class="p-select"
+                  [options]="distritosList"
+                  [(ngModel)]="distritoEntrega"
+                  [style]="{ width: '100%' }"
+                  placeholder="Seleccione el distrito"
+                >
+                </p-dropdown>
+                <small class="p-error" *ngIf="!distritoEntrega"
+                  >campo requerido*</small
+                >
+              </div>
+            </div>
+            <div class="formgrid grid">
+              <div class="field col">
+                <label for="">Descripción</label>
+                <input
+                  type="text"
+                  [(ngModel)]="descripcionEntrega"
+                  pInputText
+                  id=""
+                  required
+                />
+                <small class="p-error" *ngIf="!descripcionEntrega"
+                  >campo requerido*</small
+                >
+              </div>
+            </div>
+            <div class="formgrid grid">
+              <div class="field col">
+                <label for="">Latitude</label>
+                <input
+                  type="text"
+                  [(ngModel)]="latitudEntrega"
+                  pInputText
+                  id=""
+                  required
+                />
+                <small class="p-error" *ngIf="!latitudEntrega"
+                  >campo requerido*</small
+                >
+              </div>
+            </div>
+            <div class="formgrid grid">
+              <div class="field col">
+                <label for="">Longitude</label>
+                <input
+                  type="text"
+                  [(ngModel)]="longitudEntrega"
+                  pInputText
+                  id=""
+                  required
+                />
+                <small class="p-error" *ngIf="!longitudEntrega"
+                  >campo requerido*</small
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="footer">
+        <button
+          pButton
+          pRipple
+          label="Cancelar"
+          icon="pi pi-times"
+          class="p-button-text"
+          (click)="hideDialogDireccionEntrega()"
+        ></button>
+        <button
+          pButton
+          pRipple
+          label="Guardar"
+          icon="pi pi-check"
+          class="p-button-text"
+          (click)="createUpdateDireccionEntrega()"
+          [disabled]="validOrInvalidBtnDireccion()"
+        ></button>
+      </ng-template>
+    </p-dialog>
+
+    <p-tabPanel header="Facturados">
+      <p-panel
+        header="CLIENTES FACTURADOS"
+        [toggleable]="false"
+        class="panel_enc_pagos"
+      >
+        <p-table
+          [value]="clientesFacturados"
+          dataKey="clientesFacturadosId"
+          editMode="row"
+          styleClass="p-datatable-gridlines"
+          responsiveLayout="scroll"
+        >
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="8" class="nodata titleColumnTable">
+                No hay datos de clientes facturados que mostrar.
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th class="titleColumnTable">Raz&oacute;n Social</th>
+              <th class="titleColumnTable">Nombre Comercial</th>
+              <th class="titleColumnTable">Nombres</th>
+              <th class="titleColumnTable">Ap. Paterno</th>
+              <th class="titleColumnTable">Ap. Materno</th>
+              <th class="titleColumnTable">Celular</th>
+              <th class="titleColumnTable">N&uacute;m. Fijo</th>
+              <th class="titleColumnTable">Email</th>
+              <!-- <th></th> -->
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-cliFact let-rowIndex="rowIndex">
+            <tr>
+              <td>{{ cliFact.razonSocial != null ? cliFact.razonSocial : "" }}</td>
+              <td>{{ cliFact.nombreComercial != null ? cliFact.nombreComercial : "" }}</td>
+              <td>{{ cliFact.primerNombre != null ? cliFact.primerNombre : "" + cliFact.segundoNombre != null ? cliFact.segundoNombre : "" }}</td>
+              <td>{{ cliFact.apellidoPaterno != null ? cliFact.apellidoPaterno : "" }}</td>
+              <td>{{ cliFact.apellidoMaterno != null ? cliFact.apellidoMaterno : "" }}</td>
+              <td>{{ cliFact.celular != null ? cliFact.celular : "" }}</td>
+              <td>{{ cliFact.telefono1 != null ? cliFact.telefono1 : "" }}</td>
+              <td>{{ cliFact.correoElectronico != null ? cliFact.correoElectronico : "" }}</td>
+              <!-- <td>
+                <button
+                  pButton
+                  pRipple
+                  label="Habilitado"
+                  class="p-button-rounded p-button-success p-mr-2 p-button-sm"
+                  pTooltip="Inhabilitar"
+                  tooltipPosition="top"
+                  *ngIf="cliFact.status == '1'"
+                  (click)="inhabilitarEncargadoPagos(cliFact, rowIndex)"
+                ></button>
+                <button
+                  pButton
+                  pRipple
+                  label="Inhabilitado"
+                  class="p-button-rounded p-button-danger p-mr-2 p-button-sm"
+                  pTooltip="Habilitar"
+                  tooltipPosition="top"
+                  *ngIf="cliFact.status == '0'"
+                  (click)="habilitarEncargadoPagos(cliFact, rowIndex)"
+                ></button>
+              </td> -->
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-panel>
+    </p-tabPanel>
+  </p-tabView>
+</p-panel>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+
+<form
+  class="form"
+  [formGroup]="encargadoPagosForm"
+  (ngSubmit)="createOrUpdateEncargadoPagos()"
+>
+  <p-dialog
+    [header]="'Registro de Encargado'"
+    [(visible)]="encargadoPagosDialog"
+    [modal]="true"
+    styleClass="p-fluid"
+    [style]="{ width: '600px' }"
+  >
+    <ng-template pTemplate="content">
+      <input type="hidden" formControlName="encargadoPagosId" />
+
+      <div class="grid">
+        <div class="col">
+          <div class="p-field m-1">
+            <label for="nombres">Nombres</label>
+            <input
+              type="text"
+              pInputText
+              id="nombres"
+              formControlName="nombres"
+            />
+            <small class="p-error" *ngIf="isFieldValidEP('nombres')"
+              >Nombres requeridos</small
+            >
+          </div>
+
+          <div class="p-field m-1">
+            <label for="apePaterno">Apellido Paterno</label>
+            <input
+              type="text"
+              pInputText
+              id="apePaterno"
+              formControlName="apePaterno"
+            />
+            <small class="p-error" *ngIf="isFieldValidEP('apePaterno')"
+              >Apellido Paterno requerido</small
+            >
+          </div>
+
+          <div class="p-field m-1">
+            <label for="apeMaterno">Apellido Materno</label>
+            <input
+              type="text"
+              pInputText
+              id="apeMaterno"
+              formControlName="apeMaterno"
+            />
+            <small class="p-error" *ngIf="isFieldValidEP('apeMaterno')"
+              >Apellido Materno requerido</small
+            >
+          </div>
+
+          <div class="p-field m-1">
+            <label for="celular">Celular</label>
+            <input
+              type="text"
+              pInputText
+              id="celular"
+              formControlName="celular"
+            />
+            <small class="p-error" *ngIf="isFieldValidEP('celular')"
+              >Celular requerido</small
+            >
+          </div>
+
+          <div class="p-field m-1">
+            <label for="numFijo">N&uacute;mero Fijo</label>
+            <input
+              type="text"
+              pInputText
+              id="numFijo"
+              formControlName="numFijo"
+            />
+          </div>
+
+          <div class="p-field m-1">
+            <label for="email">Email</label>
+            <input type="email" pInputText id="email" formControlName="email" />
+            <small class="p-error" *ngIf="isFieldValidEP('email')"
+              >Email requerido</small
+            >
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        pRipple
+        label="Guardar"
+        icon="pi pi-check"
+        class="p-button-success"
+        type="submit"
+      ></button>
+      <button
+        pButton
+        pRipple
+        label="Cancelar"
+        icon="pi pi-times  "
+        class="p-button-danger"
+        (click)="cancelCreateOrUpdateEncargadoPagos()"
+      ></button>
+    </ng-template>
+  </p-dialog>
+</form>

@@ -1,0 +1,149 @@
+<p-toast></p-toast>
+
+<p-panel header="Gesti&oacute;n de Clientes" class="">
+  <p-table #dt [value]="clientes"
+           class="pheader"
+           [rows]="10"
+           selectionMode="single"
+           [(selection)]="selectedCli"
+           [globalFilterFields]="['razonSocial','nombreComercial','numDocumento','primerNombre','apellidoPaterno','apellidoMaterno']"
+           [scrollable]="true"
+           responsiveLayout="scroll"
+           [resizableColumns]="true"
+           [loading]="loadingClientes"
+           [rowHover]="true"
+           dataKey="numDocumento"
+           [paginator]="true"
+           [rowsPerPageOptions]="[10,25,50]"
+           currentPageReportTemplate="Mostrando {first} hasta {last} de {totalRecords} registros"
+           [showCurrentPageReport]="true"
+           sortMode="multiple">
+
+    <ng-template pTemplate="caption">
+        <div class="grid" fxLayout="row" fxLayoutAlign="space-between center">
+          <div class="col-12 md:col-12 lg:col-8">
+            <div class="grid">
+              <div class="col-12 md:col-12 lg:col-5 flex">
+                <input pInputText type="text" [style]="{'width':'100%'}" (input)="filtrarClientes($event, 'contains')" placeholder="Buscar por cualquier campo..."/>
+              </div>
+              <div class="col-12 md:col-6 lg:col-3 flex">
+                <p-dropdown
+                  class="p-select"
+                  [style]="{width:'100%'}"
+                  [options]="filterCliente"
+                  [(ngModel)]="filterClienteActivo"
+                  optionLabel="label"
+                  optionValue="value"
+                  (onChange)="onChangeFiltroCliente($event)"
+                >
+                </p-dropdown>
+              </div>
+              <div class="col-12 md:col-6 lg:col-4 flex">
+                <p-dropdown
+                  class="p-select"
+                  placeholder="Seleccione el canal de venta"
+                  [style]="{width:'100%'}"
+                  [(ngModel)]="filterCanalVenta"
+                  [options]="canalVentaList"
+                  optionLabel="canalVentaDescripcion"
+                  optionValue="canalVentaId"
+                  [showClear]="true"
+                  (onChange)="onChangeFiltroCanalVenta($event)"
+                >
+                </p-dropdown>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 md:col-12 lg:col-2">
+            <div class="grid">
+              <div class="col-12 md:col-12 lg:col-12">
+                <button pButton pRipple [style]="{'width':'100%'}" label="Nuevo cliente" icon="pi pi-plus-circle"
+                class="p-button-success p-mr-2" (click)="newCliente()">
+              </button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="padding: 0rem; color: #1780d7 !important;" pFrozenColumn [frozen]="true">Habilitado</th>
+        <th style="min-width:130px !important;" class="titleColumnTable">N&uacute;mero de Doc.</th>
+        <th style="min-width:360px !important" class="titleColumnTable" pSortableColumn="razonSocial">Raz&oacute;n Social<p-sortIcon field="razonSocial"></p-sortIcon></th>
+        <!-- <th style="min-width:260px !important" class="titleColumnTable" pSortableColumn="nombreComercial">Nombre Comercial<p-sortIcon field="nombreComercial"></p-sortIcon></th> -->
+        <th style="min-width:150px !important" class="titleColumnTable" pSortableColumn="primerNombre">Nombres<p-sortIcon field="primerNombre"></p-sortIcon></th>
+        <th style="min-width:150px !important" class="titleColumnTable" pSortableColumn="apellidoPaterno">Apellidos<p-sortIcon field="apellidoPaterno"></p-sortIcon></th>
+        <th style="min-width:180px !important" class="titleColumnTable" pSortableColumn="codigo">C&oacute;digo Pagador<p-sortIcon field="codigo"></p-sortIcon></th>
+        <th style="min-width:180px !important" class="titleColumnTable">Canal de venta</th>
+        <th style="min-width:120px !important; padding:1rem !important; justify-content: center;" class="titleColumnTable" alignFrozen="right" pFrozenColumn [frozen]="true">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-cliente let-rowIndex="rowIndex">
+      <tr [pSelectableRow]="cliente">
+        <td style="padding:0rem !important;" pFrozenColumn [frozen]="true">
+          <input
+            *ngIf="cliente.status=='1' || cliente.status==null; else elseBlock"
+            type="checkbox"
+            checked
+            (click)="dialogConfimacionCambiarEstadoCliente(cliente,'0')"
+            style="margin-left: 10%"
+          >
+          <ng-template #elseBlock >
+            <input
+              type="checkbox"
+              (click)="dialogConfimacionCambiarEstadoCliente(cliente,'1')"
+              style="margin-left: 10%"
+            >
+          </ng-template>
+        </td>
+        <td style="min-width:130px !important" class="titleFields">{{cliente.numDocumento}}</td>
+        <td style="min-width:360px !important" class="titleFields">{{cliente.razonSocial}}</td>
+        <!-- <td style="min-width:260px !important" class="titleFields">{{cliente.nombreComercial}}</td> -->
+        <td style="min-width:150px !important" class="titleFields">{{cliente.primerNombre!=null ? cliente.primerNombre : ""+' '+cliente.segundoNombre!=null ? cliente.segundoNombre : ""}}</td>
+        <td style="min-width:150px !important" class="titleFields">{{cliente?.apellidoPaterno!=null ? cliente.apellidoPaterno : ""+' '+cliente.apellidoMaterno!=null ? cliente.apellidoMaterno : ""}}</td>
+        <td style="min-width:180px !important; padding:0 !important" class="titleFields">{{cliente.codigo}}</td>
+        <td style="min-width:180px !important; padding:0 !important" class="titleFields">{{cliente.canalVentaId?.canalVentaNombre!}}</td>
+        <td style="min-width:120px !important; justify-content: center;" alignFrozen="right" pFrozenColumn [frozen]="true">
+          <button pButton pRipple icon="pi pi-eye"
+                  class="p-button-rounded p-button-success p-mr-2 p-button-sm icon-action"
+                  pTooltip="Ver Cliente"
+                  tooltipPosition="top"
+                  (click)="irVistaInformacionCliente(cliente)">
+          </button>
+          <button pButton pRipple icon="pi pi-file"
+                  class="p-button-rounded p-button-secondary p-mr-2 p-button-sm icon-action"
+                  pTooltip="Orden de pedidos"
+                  tooltipPosition="top"
+                  (click)="irVistaOrdenesPedidoCliente(cliente)">
+          </button>
+          <button pButton pRipple icon="pi pi-file"
+                  class="p-button-rounded p-button-primary p-mr-2 p-button-sm"
+                  pTooltip="Comprobantes"
+                  tooltipPosition="top"
+                  (click)="irVistaComprabantesCliente(cliente)">
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+<!--
+    <ng-template pTemplate="summary">
+      <p-paginator [rows]="size"
+                   [totalRecords]="totalElements"
+                   [rowsPerPageOptions]="[10,20,30]"
+                   (onPageChange)="showPage($event)"></p-paginator>
+      <div class="p-d-flex p-ai-center p-jc-between">
+        Mostrando {{clientes ? clientes.length : 0 }} Clientes de {{totalElements}}.
+      </div>
+    </ng-template>
+-->
+    <ng-template pTemplate="summary">
+      <div class="flex align-items-center justify-content-between">
+          Total: {{clientes ? clientes.length : 0 }} Clientes.
+      </div>
+  </ng-template>
+  </p-table>
+</p-panel>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

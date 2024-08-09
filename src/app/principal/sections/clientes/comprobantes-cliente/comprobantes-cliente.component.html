@@ -1,0 +1,318 @@
+<p-toast></p-toast>
+
+<p-breadcrumb [model]="navigationItmesRoutes"></p-breadcrumb>
+
+<p-panel [showHeader]="false">
+    <p-tabView>
+        <p-tabPanel header="Comprobantes">
+            <p-table
+            #dtcomprob
+            [value]="documentsList"
+            [rows]="totalElements"
+            sortMode="multiple"
+            [resizableColumns]="true"
+            styleClass="p-datatable-sm p-datatable-gridlines"
+            currentPageReportTemplate="Mostrando {{ page + 1 }} hasta {{
+                numberOfElements
+            }} de {{ totalElements }} resultados"
+            [globalFilterFields]="[
+                'fechaEmision',
+                'glosa2',
+                'guiaRemision',
+                'cliente.clienteRazonSocial',
+                'clienteDestino.clienteRazonSocial',
+                'importe',
+                'saldo',
+                'canalventaId.canalVentaDescripcion',
+                'situacion'
+            ]"
+            [rowHover]="true"
+            responsiveLayout="scroll"
+            dataKey="id"
+            [loading]="loadingDocuments"
+            [totalRecords]="totalElements"
+            [pageLinks]="totalPages"
+            [showPageLinks]="true"
+            [first]="page"
+            [showCurrentPageReport]="true"
+            >
+            <ng-template pTemplate="caption">
+                <div class="grid">
+                <div class="col-12 md:col-12 lg:col-4">
+                    <div class="grid">
+                    <div class="col-12 md:col-5 lg:col-5 flex">
+                        <p-dropdown
+                        class="p-select"
+                        [style]="{ width: '100%' }"
+                        optionLabel="lineaNegocioNombre"
+                        optionValue="filtroId"
+                        placeholder="Filtrar por:"
+                        [options]="filtroSelectComprobantes"
+                        [(ngModel)]="indexComprobantesSelected"
+                        optionLabel="label"
+                        optionValue="id"
+                        (onChange)="onChangeFiltroSelectComprobantes($event)"
+                        >
+                        </p-dropdown>
+                    </div>
+                    <div class="col-12 md:col-6 lg:col-6 flex">
+                        <input
+                        [(ngModel)]="filterNameComprobantes"
+                        pInputText
+                        [style]="{ width: '100%' }"
+                        type="text"
+                        placeholder="datos a buscar..."
+                        [disabled]="inputFiltroComprobantesDisabled()"
+                        />
+                    </div>
+                    <div class="col-12 md:col-1 lg:col-1 flex">
+                        <button
+                        pButton
+                        pRipple
+                        label=""
+                        icon="pi pi-search"
+                        class="p-button-primary p-mr-2"
+                        [style]="{ width: '100%' }"
+                        (click)="
+                            buscarComprobantes(
+                            filterNameComprobantes,
+                            index,
+                            0,
+                            size,
+                            $event
+                            )
+                        "
+                        [disabled]="btnBuscarComprobantesDisabled()"
+                        ></button>
+                    </div>
+                    </div>
+                </div>
+                <div class="col-12 md:col-12 lg:col-6">
+                    <div class="grid">
+                    <div class="col-12 md:col-6 flex">
+                        <label [style]="{ width: '45px' }" for="dateInicial"
+                        >Fecha inicial</label
+                        >
+                        <p-calendar
+                        #dateIni
+                        class="p-calendario"
+                        [style]="{ width: '100%' }"
+                        [(ngModel)]="dateInicial"
+                        (showClear)="(true)"
+                        (onSelect)="onSelectedDatesComprobantes()"
+                        dateFormat="dd/mm/yy"
+                        [showIcon]="true"
+                        inputId="icon"
+                        ></p-calendar>
+                    </div>
+                    <div class="col-12 md:col-6 flex">
+                        <label [style]="{ width: '45px' }" for="dateFinal"
+                        >Fecha final</label
+                        >
+                        <p-calendar
+                        #dateFin
+                        class="p-calendario"
+                        [style]="{ width: '100%' }"
+                        [(ngModel)]="dateFinal"
+                        (showClear)="(true)"
+                        (onSelect)="onSelectedDatesComprobantes()"
+                        dateFormat="dd/mm/yy"
+                        [showIcon]="true"
+                        inputId="icon"
+                        ></p-calendar>
+                    </div>
+                    </div>
+                </div>
+                <div class="col-12 md:col-6 lg:col-2">
+                    <div class="grid">
+                    <div class="col-12 md:col-6 lg:col-8 flex">
+                        <button
+                        pButton
+                        [style]="{ width: '100%' }"
+                        label="Clear"
+                        class="p-button-outlined"
+                        icon="pi pi-filter-slash"
+                        (click)="clearFiltersComprobantes(dtcomprob)"
+                        ></button>
+                    </div>
+                    <div class="col-12 md:col-6 lg:col-3 flex">
+                        <i
+                        *ngIf="spinnerOn == false; else elseSpinner"
+                        pButton
+                        pRipple
+                        icon="pi pi-spinner"
+                        style="font-size: 1rem"
+                        class="p-button-rounded p-button-primary"
+                        (click)="reloadListaComprobantes(dtcomprob)"
+                        pTooltip="Actualizar lista de ordenes"
+                        tooltipPosition="top"
+                        >
+                        </i>
+                        <ng-template #elseSpinner>
+                        <p-progressSpinner
+                            [style]="{ width: '30px', height: '30px' }"
+                            styleClass="custom-spinner"
+                            strokeWidth="8"
+                            fill="var(--surface-ground)"
+                            animationDuration=".5s"
+                        ></p-progressSpinner>
+                        </ng-template>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td class="titleColumnTableCompro" style="text-align: center !important" colspan="10">
+                        No hay comprobantes que mostrar.
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="header">
+                <tr>
+                <th class="titleColumnTableCompro" pSortableColumn="fechaEmision">
+                    Emisi&oacute;n<p-sortIcon field="fechaEmision"></p-sortIcon>
+                </th>
+                <th class="titleColumnTableCompro" pSortableColumn="numero">
+                    N&uacute;mero<p-sortIcon field="numero"></p-sortIcon>
+                </th>
+                <th class="titleColumnTableCompro" pSortableColumn="guiaRemision">
+                    Gu&iacute;a remisi&oacute;n<p-sortIcon
+                    field="guiaRemision"
+                    ></p-sortIcon>
+                </th>
+                <th class="titleColumnTableCompro" pSortableColumn="tipoDocumento.descripcion">
+                    Tipo Doc.<p-sortIcon field="tipoDocumento.descripcion">
+                    </p-sortIcon>
+                </th>
+                <th class="titleColumnTableCompro" pSortableColumn="cliente.clienteRazonSocial">
+                    Cliente comprob.<p-sortIcon
+                    field="cliente.clienteRazonSocial"
+                    ></p-sortIcon>
+                </th>
+                <th class="titleColumnTableCompro" pSortableColumn="clienteDestino.clienteRazonSocial">
+                    Cliente real<p-sortIcon
+                    field="clienteDestino.clienteRazonSocial"
+                    ></p-sortIcon>
+                </th>
+                <th class="titleColumnTableCompro" pSortableColumn="importe">
+                    Importe<p-sortIcon field="importe"></p-sortIcon>
+                </th>
+                <th class="titleColumnTableCompro" pSortableColumn="saldo">
+                    Saldo<p-sortIcon field="saldo"></p-sortIcon>
+                </th>
+                <th class="titleColumnTableCompro" pSortableColumn="canalventaId.canalVentaDescripcion">
+                    Canal<p-sortIcon
+                    field="canalventaId.canalVentaDescripcion"
+                    ></p-sortIcon>
+                </th>
+                <th class="titleColumnTableCompro" pSortableColumn="situacion">
+                    Situa<p-sortIcon field="situacion"></p-sortIcon>
+                </th>
+                <th></th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-document let-rowIndex="rowIndex">
+                <tr>
+                <td>{{ document.fechaEmision }}</td>
+                <td>{{ document.glosa2 }}</td>
+                <td>{{ document.guiaRemision }}</td>
+                <td>{{ document.tipoDocumento?.descripcion }}</td>
+                <td>{{ document.cliente.clienteRazonSocial }}</td>
+                <td>{{ document.clienteDestino.clienteRazonSocial }}</td>
+                <td>{{ document.importe | currency : "" : "S/. " }}</td>
+                <td>{{ document.saldo | currency : "" : "S/. " }}</td>
+                <td>{{ document.canalventaId?.canalVentaDescripcion }}</td>
+                <td>{{ document.situacion }}</td>
+                <td>
+                    <button
+                    pButton
+                    pRipple
+                    icon="pi pi-file"
+                    class="p-button-rounded p-button-secondary p-button-sm"
+                    pTooltip="Detalle de la orden"
+                    tooltipPosition="top"
+                    (click)="setDetallesComprobantes(document)"
+                    ></button>
+                </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="summary">
+                <p-paginator
+                #paginadorConprobante
+                [rows]="size"
+                [totalRecords]="totalElements"
+                [rowsPerPageOptions]="[10, 20, 30]"
+                (onPageChange)="showPageFiltroComprobante($event)"
+                ></p-paginator>
+                <div
+                *ngIf="totalElements != 0; else elseBlock1"
+                class="p-d-flex p-ai-center p-jc-between"
+                >
+                Mostrando {{ firstRowOfPage + 1 }} a {{ lastRowOfPage }} Clientes de
+                {{ totalElements }} encontrados.
+                </div>
+                <ng-template #elseBlock1>
+                <div class="p-d-flex p-ai-center p-jc-between">
+                    Total: {{ totalElements }} comprobantes.
+                </div>
+                </ng-template>
+            </ng-template>
+            </p-table>
+
+            <p-dialog
+            [(visible)]="detalleComprobantesDialog"
+            [style]="{ width: '1000px' }"
+            [header]="'Detalle de comprobante'"
+            [modal]="true"
+            styleClass="p-fluid"
+          >
+            <ng-template pTemplate="content">
+              <div class="card">
+                <p-table responsiveLayout="scroll" [value]="detalleComprobantesList">
+                  <ng-template pTemplate="header" let-columns>
+                    <tr>
+                      <th>Secuencia</th>
+                      <th>C&oacute;digo</th>
+                      <th>Art&iacute;culo</th>
+                      <th>Unidades</th>
+                      <th>UM2</th>
+                      <th>Cantidad</th>
+                      <th>UM1</th>
+                      <th>Precio</th>
+                      <th>Observaci&oacute;n</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-detalle let-columns="columns">
+                    <tr>
+                      <td>{{ detalle.detalleSecuencia }}</td>
+                      <td>{{ detalle.articulo?.articuloCodigo }}</td>
+                      <td>{{ detalle.articulo?.articuloDescripcion }}</td>
+                      <td>{{ detalle.detalleUnidades }}</td>
+                      <td>
+                        {{
+                          detalle.articulo.unidadmedidaId2?.unidadMedidaNombreCorto
+                        }}
+                      </td>
+                      <td>{{ detalle.detalleCantidad }}</td>
+                      <td>
+                        {{
+                          detalle.articulo.unidadMedidaId1?.unidadMedidaNombreCorto
+                        }}
+                      </td>
+                      <td>{{ detalle.detallePrecio | currency : "" : "S/. " }}</td>
+                      <td>{{ detalle.detalleObservacion }}</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </ng-template>
+          </p-dialog>
+          
+        </p-tabPanel>
+    </p-tabView>
+</p-panel>

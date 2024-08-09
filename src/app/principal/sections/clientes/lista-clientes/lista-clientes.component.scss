@@ -1,0 +1,39 @@
+th {
+  font-size: small;
+  text-align: center;
+  background-color: #f0f0f0 !important;
+}
+
+td {
+  font-size: x-small;
+  padding-bottom: 0rem !important;
+  padding-right: 0rem !important;
+  padding-left: 0.3rem !important;
+  padding-top: 0rem !important;
+}
+
+p-columnFilter {
+  width: 100%;
+}
+
+.icon-action {
+  margin-right: 4px;
+}
+
+.titleFields {
+  font-weight: bold !important;
+}
+
+.titleColumnTable {
+  color: #1780d7 !important;
+  padding:1rem !important;
+}
+
+:host ::ng-deep .pheader .p-datatable-header {
+  background-color: #f0f0f0 !important;
+  padding: 0.5rem 0.5rem 0 0.5rem;
+}
+
+.p-select{
+  width: 100%;
+}

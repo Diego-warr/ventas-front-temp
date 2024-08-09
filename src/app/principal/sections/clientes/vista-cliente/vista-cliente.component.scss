@@ -1,0 +1,107 @@
+input {
+  font-size: small;
+  width: 100%;
+}
+
+.li-style {
+  list-style: none;
+}
+
+td {
+  font-size: x-small;
+}
+
+.panel_tp {
+  background-color: #df2f2f;
+}
+
+.input-resaltado {
+  background-color: aquamarine;
+}
+
+body {
+    //padding: 2em;
+    padding: 0em;
+    font-family: -apple-system, BlinkMacSystemFont, “Segoe UI”, Roboto, Helvetica, Arial, sans-serif, “Apple Color Emoji”, “Segoe UI Emoji”, “Segoe UI Symbol”;
+}
+
+.cal {
+  width: 310px;
+}
+
+.nodata {
+  text-align: center !important;
+}
+
+.p-select{
+  width: 100%;
+}
+
+.p-calendario{
+  width: 100%;
+}
+
+agm-map {
+  width: 100%;
+  height: 700px;
+}
+
+.referencias {
+  padding: 0;
+}
+
+:host ::ng-deep .p-tabview-panel {
+  background-color: #e9e9e9 !important;
+  padding-top: 0rem;}
+
+.cssbtnagregar {
+  padding-top: 0rem !important;
+  padding-bottom: 0rem !important;
+}
+
+.titleFields {
+  margin-bottom: 5px !important;
+  font-weight: bold !important;
+}
+
+:host ::ng-deep .divisor .p-divider-horizontal {
+  margin: 0.5rem 0rem 1rem !important;
+}
+
+.titleColumnTable {
+  color: #1780d7 !important;
+}
+
+.btnAddDirEmp {
+  padding-top: 0rem;
+}
+
+::ng-deep .p-datepicker table th {
+  padding: 0.5rem 0.2rem;
+}
+
+::ng-deep .p-datepicker table td {
+  padding: 0.1rem !important;
+}
+
+::ng-deep .p-datepicker table td>span {
+  width: 1.5rem;
+  height: 2.1rem;
+}
+
+::ng-deep .p-datepicker table {
+  font-size: 10pt;
+  margin: -0.143rem 0;
+}
+
+::ng-deep .p-datepicker .p-datepicker-header {
+  padding: 0rem;
+}
+
+::ng-deep .p-panel .p-panel-content {
+  padding: 0;
+}
+
+.divPadding {
+  padding: 0 1.1rem 0 1.1rem;
+}

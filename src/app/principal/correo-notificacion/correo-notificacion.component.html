@@ -1,0 +1,111 @@
+<p-toast></p-toast>
+
+<p-table #dtCorreoNotif [value]="correoNotificacionCustomList" [paginator]="true" [rows]="10"
+    [showCurrentPageReport]="true" responsiveLayout="scroll" styleClass="p-datatable-gridlines"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros."
+    [rowsPerPageOptions]="[10,25,50]" [rowHover]="true" [globalFilterFields]="['correo','']">
+    <ng-template pTemplate="caption">
+        <div class="grid" fxLayoutAlign="space-between center">
+            <div class="col-12 md:col-12 lg:col-8">
+                <div class="grid" fxLayout="row">
+                    <div class="col-12 md:col-6 lg:col-4 flex">
+                        <p-dropdown class="p-select" [style]="{'width':'100%'}" placeholder="Seleccione el canal de venta"
+                            [(ngModel)]="canalVentaIdSelected" [options]="canalVentaList"
+                            optionLabel="canalVentaDescripcion" optionValue="canalVentaId"
+                            (onChange)="onChangeCanalVenta($event)">
+                        </p-dropdown>
+                    </div>
+                    <div class="col-12 md:col-6 lg:col-4 flex">
+                        <input [style]="{'width':'100%'}" pInputText placeholder="Buscar por cualquier campo..."
+                            type="text" (input)="filtrarCorreoNotificacion($event , 'contains')" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 md:col-12 lg:col-4">
+                <div class="grid">
+                    <div class="col-12 md:col-12 lg:col-12 flex">
+                        <button pButton pRipple [style]="{'width':'100%'}" label="Asignar notificacion de correo"
+                            icon="pi pi-plus-circle" class="p-button-success p-mr-2"
+                            (click)="openNewCorreoNotificacion()">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th class="titleColumnTableOP">Correo</th>
+            <th class="titleColumnTableOP">Canal Venta</th>
+            <th class="titleColumnTableOP">Estado</th>
+            <th></th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-correoNoti>
+        <tr>
+            <td class="dataTable">{{correoNoti.correo}}</td>
+            <td class="dataTable">{{correoNoti.canalVentaDescripcion}}</td>
+            <td class="dataTable">
+                <span [class]="'product-badge status-' + correoNoti.status.toUpperCase()">
+                    <div *ngIf="correoNoti.status=='A'; else elseBlock" style="color: forestgreen;"
+                        class="font-size-status">
+                        Habilitado</div>
+                    <ng-template #elseBlock>
+                        <div style="color: #df2f2f;" class="font-size-status">Inhabilitado</div>
+                    </ng-template>
+                </span>
+            </td>
+            <td class="botones">
+                <button *ngIf="correoNoti.status=='A'; else elseBlock3" pButton pRipple icon="pi pi-trash"
+                    class="p-button-rounded p-button-danger icon-action p-button-sm" (click)="deshabilitar(correoNoti)"
+                    pTooltip="Inhabilitar correo de este canal" tooltipPosition="top"></button>
+                <ng-template #elseBlock3>
+                    <button pButton pRipple icon="pi pi-arrow-circle-up"
+                        class="p-button-rounded p-button-success icon-action " (click)="habilitar(correoNoti)"
+                        pTooltip="Habilitar correo de este canal" tooltipPosition="top"></button>
+                </ng-template>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+        <div class="p-d-flex p-ai-center p-jc-between">
+            Total: {{correoNotificacionList ? correoNotificacionList.length : 0 }} Correos asociados.
+        </div>
+    </ng-template>
+</p-table>
+
+
+<p-dialog [(visible)]="correoNotificacionDialog" [style]="{width: '500px', height:'420px'}" [header]=titleDialog
+    [modal]="true" styleClass="p-fluid" [closable]="false">
+    <br>
+    <br>
+    <ng-template pTemplate="content">
+        <div class="formgrid grid">
+            <div class="field col">
+                <label for="canalVentaCodigo" class="titleFields">Canal de Venta</label>
+                <p-dropdown class="p-select" [style]="{'width':'100%'}" placeholder="Seleccione Canal de venta:"
+                    [options]="canalVentaList" [(ngModel)]="correoNotificacion.canalVentaId"
+                    optionLabel="canalVentaDescripcion" optionValue="canalVentaId">
+                </p-dropdown>
+                <small class="p-error" *ngIf="!correoNotificacion.canalVentaId">campo requerido*</small>
+            </div>
+        </div>
+        <br>
+        <div class="formgrid grid">
+            <div class="field col">
+                <label for="canalVentaDescripcion" class="titleFields">Correo electrónico</label>
+                <input type="text" pInputText [(ngModel)]="correoNotificacion.correo"
+                    placeholder="Ingrese su correo electrónico:" />
+                <small class="p-error" *ngIf="!correoNotificacion.correo">campo requerido*</small>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer" class="foo">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" [disabled]="validOrInvalidBtn()"
+            (click)="onCreate(correoNotificacion)"></button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
