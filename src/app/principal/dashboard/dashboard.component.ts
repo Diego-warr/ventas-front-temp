@@ -214,6 +214,8 @@ export class DashboardComponent implements OnInit {
   codCasillero!: string;
   cantCasillero!: number;
   pesoPromedio!: number;
+
+  precioCasilleroCanal;
   @ViewChild('dtOrdenes') dtOrdenes: Table | undefined;
   @ViewChild('dateIni') calendarIni: Calendar | undefined;
   @ViewChild('dateFin') calendarFin: Calendar | undefined;
@@ -1096,6 +1098,9 @@ export class DashboardComponent implements OnInit {
     this.canalVenta = orden.canalventa?.canalVentaId!
       ? orden.canalventa?.canalVentaId!
       : 0;
+    this.precioCasilleroCanal = this.canalVentaList.find(
+      (item) => (item.canalVentaId = this.canalVenta)
+    )?.precioCasillero;
     this.origen = orden.origen;
     this.plantel = orden.plantelId;
     let nombrePlantel = orden.plantel;
@@ -2066,9 +2071,10 @@ export class DashboardComponent implements OnInit {
             detalleOP.observacion = '';
 
             this.detalleOPItemsList.push(detalleOP);
+            this.addArticuloToDetalleOP(this.detalleOPItemsList);
+            this.resetInputsDetalleOP();
           });
       }
-
       this.addArticuloToDetalleOP(this.detalleOPItemsList);
       this.resetInputsDetalleOP();
     }
@@ -2325,5 +2331,17 @@ export class DashboardComponent implements OnInit {
       });
     }
     return total.toFixed(2);
+  }
+
+  onChangeCanalVenta(event) {
+    this.precioCasilleroCanal = this.canalVentaList.find(
+      (item) => item.canalVentaId == event.value
+    )?.precioCasillero;
+  }
+
+  detalleCantidad(detalleItem) {
+    if (detalleItem.articuloDescripcion.toLowerCase().includes('casillero')) {
+      return (detalleItem.cantidad / 120).toFixed(2);
+    } else return detalleItem.cantidad;
   }
 }

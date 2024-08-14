@@ -901,11 +901,18 @@
               optionValue="canalVentaId"
               [(ngModel)]="canalVenta"
               aria-describedby="canalVenta-help"
+              (onChange)="onChangeCanalVenta($event)"
             >
             </p-dropdown>
           </div>
           <small id="canalVenta-help" class="p-error block" *ngIf="!canalVenta"
             >campo requerido*</small
+          >
+          <small
+            id="canalVenta-help"
+            class="p-error block"
+            *ngIf="precioCasilleroCanal && canalVenta"
+            >El precio casillero es S/ {{ precioCasilleroCanal }}</small
           >
         </div>
         <div class="col-12 md:col-4 lg:col-3">
@@ -1323,7 +1330,7 @@
             <td>{{ detalleItem.articuloCodigo }}</td>
             <td>{{ detalleItem.articuloDescripcion }}</td>
             <td>{{ detalleItem.unidades }}</td>
-            <td>{{ detalleItem.cantidad }}</td>
+            <td>{{ detalleCantidad(detalleItem) }}</td>
             <td>
               {{ detalleItem.precio ? simboloMoneda + detalleItem.precio : "" }}
             </td>
@@ -1363,8 +1370,9 @@
           <tr class="total-row">
             <td colspan="7"></td>
             <td>Total</td>
-            <td>{{totalAmountOrder()? simboloMoneda + totalAmountOrder()
-                  : ""}}</td>
+            <td>
+              {{ totalAmountOrder() ? simboloMoneda + totalAmountOrder() : "" }}
+            </td>
             <td colspan="3"></td>
           </tr>
         </ng-template>
