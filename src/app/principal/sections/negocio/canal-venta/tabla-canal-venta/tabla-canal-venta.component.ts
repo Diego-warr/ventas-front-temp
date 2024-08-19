@@ -7,11 +7,10 @@ import { CanalVentaService } from 'src/app/services/canal-venta.service';
 @Component({
   selector: 'app-tabla-canal-venta',
   templateUrl: './tabla-canal-venta.component.html',
-  styleUrls: ['./tabla-canal-venta.component.scss']
+  styleUrls: ['./tabla-canal-venta.component.scss'],
 })
 export class CanalVentaComponent implements OnInit {
-
-  canalVentaList: CanalVentaJVDTO[]=[];
+  canalVentaList: CanalVentaJVDTO[] = [];
   canalVentaJV!: CanalVentaJVDTO;
 
   loadingCanales = false;
@@ -26,13 +25,16 @@ export class CanalVentaComponent implements OnInit {
 
   estadoConvert!: String;
   estadoDefectoActualizar!: number;
+  updatePriceBoxByChannel: boolean = false;
 
+  canalToUpdate: any = {};
   @ViewChild('dtCanales') dtCanales: Table | undefined;
 
-
-  constructor(private canalVentaService: CanalVentaService,
-              private confirmationService: ConfirmationService,
-              private messageService: MessageService) { }
+  constructor(
+    private canalVentaService: CanalVentaService,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit(): void {
     this.getAll();
@@ -40,14 +42,14 @@ export class CanalVentaComponent implements OnInit {
 
   getAll() {
     this.canalVentaService.getAll().subscribe(
-      data => {
+      (data) => {
         this.canalVentaList = data;
       },
-      error => {
+      (error) => {
         console.log(error);
-        return "Error";
+        return 'Error';
       }
-    )
+    );
   }
 
   habilitarCanal(canal: CanalVentaJVDTO) {
@@ -57,15 +59,22 @@ export class CanalVentaComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.canalVentaService.habilitar(canal.canalVentaId).subscribe(
-          data => {
-              this.canalVentaList[this.findIndexById(canal.canalVentaId)].canalVentaEnabled = 1
+          (data) => {
+            this.canalVentaList[
+              this.findIndexById(canal.canalVentaId)
+            ].canalVentaEnabled = 1;
           },
-          error => {
+          (error) => {
             console.log(error);
           }
         );
-        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Canal de venta habilitado', life: 3000 });
-      }
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Canal de venta habilitado',
+          life: 3000,
+        });
+      },
     });
   }
 
@@ -76,15 +85,22 @@ export class CanalVentaComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.canalVentaService.inhabilitar(canal.canalVentaId).subscribe(
-          data => {
-              this.canalVentaList[this.findIndexById(canal.canalVentaId)].canalVentaEnabled = 0
+          (data) => {
+            this.canalVentaList[
+              this.findIndexById(canal.canalVentaId)
+            ].canalVentaEnabled = 0;
           },
-          error => {
+          (error) => {
             console.log(error);
           }
         );
-        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Canal de venta inhabilitado', life: 3000 });
-      }
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Canal de venta inhabilitado',
+          life: 3000,
+        });
+      },
     });
   }
 
@@ -100,19 +116,22 @@ export class CanalVentaComponent implements OnInit {
   }
 
   filtrarCanales(event: Event, stringVal: String) {
-    this.dtCanales!.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+    this.dtCanales!.filterGlobal(
+      (event.target as HTMLInputElement).value,
+      'contains'
+    );
   }
 
   openNew() {
-    this.titleDialog = "NUEVO CANAL DE VENTA";
+    this.titleDialog = 'NUEVO CANAL DE VENTA';
     this.resetCanalVenta();
-    this.estadoConvert = "Habilitado";
+    this.estadoConvert = 'Habilitado';
     this.actualizarCanal = false;
     this.canalVentaDialog = true;
   }
 
   setEditCanal(canal: CanalVentaJVDTO) {
-    this.titleDialog = "EITAR CANAL DE VENTA";
+    this.titleDialog = 'EITAR CANAL DE VENTA';
     this.canalVentaJV = canal;
     this.estadoDefectoActualizar = canal.canalVentaEnabled;
     this.convertEstadoCanal(canal.canalVentaEnabled);
@@ -121,10 +140,10 @@ export class CanalVentaComponent implements OnInit {
   }
 
   convertEstadoCanal(estado: number) {
-    if(estado == 1) {
-      this.estadoConvert = "Habilitado";
+    if (estado == 1) {
+      this.estadoConvert = 'Habilitado';
     } else {
-      this.estadoConvert = "Inhabilitado";
+      this.estadoConvert = 'Inhabilitado';
     }
   }
 
@@ -138,9 +157,12 @@ export class CanalVentaComponent implements OnInit {
   }
 
   validOrInvalidBtn(): boolean {
-    if(this.canalVentaJV.canalVentaCodigo == "" || this.canalVentaJV.canalVentaCodigo == null
-                                              || this.canalVentaJV.canalVentaDescripcion == ""
-                                              || this.canalVentaJV.canalVentaDescripcion == null) {
+    if (
+      this.canalVentaJV.canalVentaCodigo == '' ||
+      this.canalVentaJV.canalVentaCodigo == null ||
+      this.canalVentaJV.canalVentaDescripcion == '' ||
+      this.canalVentaJV.canalVentaDescripcion == null
+    ) {
       return true;
     } else {
       return false;
@@ -164,19 +186,24 @@ export class CanalVentaComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.canalVentaService.create(canalVenta).subscribe(
-          data => {
-              this.getAll();
+          (data) => {
+            this.getAll();
           },
-          error => {
+          (error) => {
             console.log(error);
           }
         );
-        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Canal de venta creado correctamente', life: 3000 });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Canal de venta creado correctamente',
+          life: 3000,
+        });
       },
       reject: () => {
         this.resetCanalVenta();
         this.getAll();
-      }
+      },
     });
   }
 
@@ -189,32 +216,68 @@ export class CanalVentaComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.canalVentaService.update(canalVenta).subscribe(
-          data => {
-              this.getAll();
+          (data) => {
+            this.getAll();
           },
-          error => {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Canal de venta no ha sido actualizado', life: 3000 });
+          (error) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Canal de venta no ha sido actualizado',
+              life: 3000,
+            });
             console.log(error);
-            return "Error";
+            return 'Error';
           }
         );
-        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Canal de venta actualizado correctamente', life: 3000 });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Canal de venta actualizado correctamente',
+          life: 3000,
+        });
       },
       reject: () => {
         this.resetCanalVenta();
         this.getAll();
-      }
+      },
     });
   }
 
   resetCanalVenta() {
     this.canalVentaJV = {
       canalVentaId: 0,
-      canalVentaCodigo : "",
-      canalVentaDescripcion: "",
-      canalVentaResponsable: "",
+      canalVentaCodigo: '',
+      canalVentaDescripcion: '',
+      canalVentaResponsable: '',
       canalVentaEnabled: 0,
     };
   }
 
+  editPriceBox(canal) {
+    // debugger;
+    this.canalToUpdate = canal;
+    this.updatePriceBoxByChannel = true;
+  }
+
+  hideDialogPriceBox() {
+    this.getAll();
+    this.updatePriceBoxByChannel = false;
+  }
+
+  updatePriceBoxByChannelAction() {
+    this.canalVentaService
+      .updatePriceBox(
+        this.canalToUpdate.canalVentaId,
+        this.canalToUpdate.precioCasillero
+      )
+      .subscribe((res) => {
+        this.updatePriceBoxByChannel = false;
+        this.getAll();
+      });
+  }
+
+  validOrInvalidBtnUpdateBoxPrice() {
+    return false;
+  }
 }

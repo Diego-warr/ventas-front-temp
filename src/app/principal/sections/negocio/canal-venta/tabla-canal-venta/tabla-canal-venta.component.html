@@ -1,128 +1,295 @@
 <p-toast></p-toast>
 
 <div class="card">
-    <p-table #dtCanales [value]="canalVentaList" [rows]="10" [paginator]="true" sortMode="multiple"
-        [globalFilterFields]="['canalVentaCodigo','canalVentaDescripcion','canalVentaResponsable','canalVentaEnabled']" responsiveLayout="scroll"
-        [loading]="loadingCanales" [rowsPerPageOptions]="[10,25,30]" [rowHover]="true" dataKey="id"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros."
-        [showCurrentPageReport]="true">
-        <ng-template pTemplate="caption">
-            <div class="grid">
-                <div class="col-12 md:col-12 lg:col-12">
-                    <div class="grid" fxLayout="row" fxLayoutAlign="space-between center">
-                        <div class="col-12 md:col-3 flex">
-                            <input [style]="{'width':'100%'}" [(ngModel)]="filterName" pInputText
-                                placeholder="buscar por canal" type="text"
-                                (input)="filtrarCanales($event , 'contains')" />
-                        </div>
-                        <div class="col-12 md:col-3 flex">
-                            <button pButton pRipple [style]="{'width':'100%'}" label="Nuevo Canal de Venta"
-                                icon="pi pi-plus-circle" class="p-button-success p-mr-2" (click)="openNew()">
-                            </button>
-                        </div>
-                    </div>
-                </div>
+  <p-table
+    #dtCanales
+    [value]="canalVentaList"
+    [rows]="10"
+    [paginator]="true"
+    sortMode="multiple"
+    [globalFilterFields]="[
+      'canalVentaCodigo',
+      'canalVentaDescripcion',
+      'canalVentaResponsable',
+      'canalVentaEnabled'
+    ]"
+    responsiveLayout="scroll"
+    [loading]="loadingCanales"
+    [rowsPerPageOptions]="[10, 25, 30]"
+    [rowHover]="true"
+    dataKey="id"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros."
+    [showCurrentPageReport]="true"
+  >
+    <ng-template pTemplate="caption">
+      <div class="grid">
+        <div class="col-12 md:col-12 lg:col-12">
+          <div class="grid" fxLayout="row" fxLayoutAlign="space-between center">
+            <div class="col-12 md:col-3 flex">
+              <input
+                [style]="{ width: '100%' }"
+                [(ngModel)]="filterName"
+                pInputText
+                placeholder="buscar por canal"
+                type="text"
+                (input)="filtrarCanales($event, 'contains')"
+              />
             </div>
-        </ng-template>
-        <ng-template pTemplate="header">
-            <tr>
-                <th class="titleColumnTable" pSortableColumn="canalVentaCodigo">C&oacute;digo <p-sortIcon field="canalVentaCodigo"></p-sortIcon>
-                </th>
-                <th class="titleColumnTable" ppSortableColumn="canalVentaDescripcion">Nombre <p-sortIcon field="canalVentaDescripcion"></p-sortIcon>
-                </th>
-                <th class="titleColumnTable" ppSortableColumn="canalVentaResponsable">Responsable<p-sortIcon field="canalVentaResponsable"></p-sortIcon>
-                </th>
-                <th class="titleColumnTable" ppSortableColumn="canalVentaEnabled">Estado <p-sortIcon field="canalVentaEnabled"></p-sortIcon>
-                </th>
-                <th class="titleColumnTable" p>Creado por</th>
-                <th class="titleColumnTable" p>Modificado por</th>
-                <th></th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-canal>
-            <tr>
-                <td class="dataTable">{{canal.canalVentaCodigo}}</td>
-                <td class="dataTable">{{canal.canalVentaDescripcion}}</td>
-                <td class="dataTable">{{canal.canalVentaResponsable}}</td>
-                <td>
-                    <span>
-                        <div *ngIf="canal.canalVentaEnabled==1; else elseBlock" style="color: forestgreen;"
-                            class="font-size-status">Habilitado</div>
-                        <ng-template #elseBlock>
-                            <div style="color: #df2f2f;" class="font-size-status">Inhabilitado</div>
-                        </ng-template>
-                    </span>
-                </td>
-                <td>{{''}}</td>
-                <td>{{''}}</td>
-                <td>
-                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-warning mr-2"
-                        (click)="setEditCanal(canal)" pTooltip="Editar canal de venta" tooltipPosition="top">
-                    </button>
-                    <button *ngIf="canal.canalVentaEnabled == 1; else elseBlock1" pButton pRipple icon="pi pi-trash"
-                        class="p-button-rounded p-button-danger icon-action p-button-sm"
-                        (click)="deshabilitarCanal(canal)" pTooltip="Inhabilitar canal de venta"
-                        tooltipPosition="top">
-                    </button>
-                    <ng-template #elseBlock1>
-                        <button pButton pRipple icon="pi pi-arrow-circle-up"
-                            class="p-button-rounded p-button-success icon-action " (click)="habilitarCanal(canal)"
-                            pTooltip="Habilitar canal de venta" tooltipPosition="top">
-                        </button>
-                    </ng-template>
-                </td>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="summary">
-            <div class="flex align-items-center justify-content-between">
-                Total: {{ canalVentaList ? canalVentaList.length : 0 }} Canales de venta.
+            <div class="col-12 md:col-3 flex">
+              <button
+                pButton
+                pRipple
+                [style]="{ width: '100%' }"
+                label="Nuevo Canal de Venta"
+                icon="pi pi-plus-circle"
+                class="p-button-success p-mr-2"
+                (click)="openNew()"
+              ></button>
             </div>
-        </ng-template>
-    </p-table>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="titleColumnTable" pSortableColumn="canalVentaCodigo">
+          C&oacute;digo <p-sortIcon field="canalVentaCodigo"></p-sortIcon>
+        </th>
+        <th class="titleColumnTable" ppSortableColumn="canalVentaDescripcion">
+          Nombre <p-sortIcon field="canalVentaDescripcion"></p-sortIcon>
+        </th>
+        <th class="titleColumnTable" ppSortableColumn="canalVentaResponsable">
+          Responsable<p-sortIcon field="canalVentaResponsable"></p-sortIcon>
+        </th>
+        <th class="titleColumnTable" ppSortableColumn="canalVentaEnabled">
+          Estado <p-sortIcon field="canalVentaEnabled"></p-sortIcon>
+        </th>
+        <th class="titleColumnTable" p>Creado por</th>
+        <th class="titleColumnTable" p>Modificado por</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-canal>
+      <tr>
+        <td class="dataTable">{{ canal.canalVentaCodigo }}</td>
+        <td class="dataTable">{{ canal.canalVentaDescripcion }}</td>
+        <td class="dataTable">{{ canal.canalVentaResponsable }}</td>
+        <td>
+          <span>
+            <div
+              *ngIf="canal.canalVentaEnabled == 1; else elseBlock"
+              style="color: forestgreen"
+              class="font-size-status"
+            >
+              Habilitado
+            </div>
+            <ng-template #elseBlock>
+              <div style="color: #df2f2f" class="font-size-status">
+                Inhabilitado
+              </div>
+            </ng-template>
+          </span>
+        </td>
+        <td>{{ "" }}</td>
+        <td>{{ "" }}</td>
+        <td>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-warning mr-2"
+            (click)="setEditCanal(canal)"
+            pTooltip="Editar canal de venta"
+            tooltipPosition="top"
+          ></button>
+          <button
+            *ngIf="canal.canalVentaEnabled == 1; else elseBlock1"
+            pButton
+            pRipple
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-danger icon-action p-button-sm"
+            (click)="deshabilitarCanal(canal)"
+            pTooltip="Inhabilitar canal de venta"
+            tooltipPosition="top"
+          ></button>
+          <ng-template #elseBlock1>
+            <button
+              pButton
+              pRipple
+              icon="pi pi-arrow-circle-up"
+              class="p-button-rounded p-button-success icon-action"
+              (click)="habilitarCanal(canal)"
+              pTooltip="Habilitar canal de venta"
+              tooltipPosition="top"
+            ></button>
+          </ng-template>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-tag"
+            class="p-button-rounded p-button-primary ml-2"
+            (click)="editPriceBox(canal)"
+            pTooltip="Editar canal de venta"
+            tooltipPosition="top"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div class="flex align-items-center justify-content-between">
+        Total: {{ canalVentaList ? canalVentaList.length : 0 }} Canales de
+        venta.
+      </div>
+    </ng-template>
+  </p-table>
 </div>
 
-<p-dialog [(visible)]="canalVentaDialog" [style]="{width: '400px', height:'470px'}" [header]=titleDialog
-    [modal]="true" styleClass="p-fluid" [closable]="false">
+<p-dialog
+  [(visible)]="canalVentaDialog"
+  [style]="{ width: '400px', height: '470px' }"
+  [header]="titleDialog"
+  [modal]="true"
+  styleClass="p-fluid"
+  [closable]="false"
+>
+  <br />
+  <br />
 
-    <br>
-    <br>
+  <ng-template pTemplate="content">
+    <div class="formgrid grid">
+      <div class="field col">
+        <label for="canalVentaCodigo">C&oacute;digo</label>
+        <input
+          type="text"
+          pInputText
+          id="canalVentaCodigo"
+          [(ngModel)]="canalVentaJV.canalVentaCodigo"
+        />
+        <small class="p-error" *ngIf="!canalVentaJV.canalVentaCodigo"
+          >campo requerido*</small
+        >
+      </div>
+    </div>
+    <div class="formgrid grid">
+      <div class="field col">
+        <label for="canalVentaDescripcion">Canal de venta</label>
+        <input
+          type="text"
+          pInputText
+          id="canalVentaDescripcion"
+          [(ngModel)]="canalVentaJV.canalVentaDescripcion"
+        />
+        <small class="p-error" *ngIf="!canalVentaJV.canalVentaDescripcion"
+          >campo requerido*</small
+        >
+      </div>
+    </div>
+    <div class="formgrid grid">
+      <div class="field col">
+        <label for="canalVentaResponsable">Responsable</label>
+        <input
+          type="text"
+          pInputText
+          id="canalVentaResponsable"
+          [(ngModel)]="canalVentaJV.canalVentaResponsable"
+        />
+        <small class="p-error" *ngIf="!canalVentaJV.canalVentaResponsable"
+          >campo requerido*</small
+        >
+      </div>
+    </div>
+    <div class="formgrid grid">
+      <div class="field col">
+        <label for="canalVentaEnabled">Estado</label>
+        <input
+          type="text"
+          pInputText
+          id="canalVentaEnabled"
+          [(ngModel)]="estadoConvert"
+          [disabled]="disableEstado"
+        />
+        <small class="p-error" *ngIf="!estadoConvert">campo requerido*</small>
+      </div>
+    </div>
+  </ng-template>
 
-    <ng-template pTemplate="content">
-        <div class="formgrid grid">
-            <div class="field col">
-                <label for="canalVentaCodigo">C&oacute;digo</label>
-                <input type="text" pInputText id="canalVentaCodigo" [(ngModel)]="canalVentaJV.canalVentaCodigo"/>
-                <small class="p-error" *ngIf="!canalVentaJV.canalVentaCodigo">campo requerido*</small>
-            </div>
-        </div>
-        <div class="formgrid grid">
-            <div class="field col">
-                <label for="canalVentaDescripcion">Canal de venta</label>
-                <input type="text" pInputText id="canalVentaDescripcion" [(ngModel)]="canalVentaJV.canalVentaDescripcion"/>
-                <small class="p-error" *ngIf="!canalVentaJV.canalVentaDescripcion">campo requerido*</small>
-            </div>
-        </div>
-        <div class="formgrid grid">
-            <div class="field col">
-                <label for="canalVentaResponsable">Responsable</label>
-                <input type="text" pInputText id="canalVentaResponsable" [(ngModel)]="canalVentaJV.canalVentaResponsable"/>
-                <small class="p-error" *ngIf="!canalVentaJV.canalVentaResponsable">campo requerido*</small>
-            </div>
-        </div>
-        <div class="formgrid grid">
-            <div class="field col">
-                <label for="canalVentaEnabled">Estado</label>
-                <input type="text" pInputText id="canalVentaEnabled" [(ngModel)]="estadoConvert" [disabled]="disableEstado"/>
-                <small class="p-error" *ngIf="!estadoConvert">campo requerido*</small>
-            </div>
-        </div>
-    </ng-template>
-
-    <ng-template pTemplate="footer" class="foo">
-        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-        <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" [disabled]="validOrInvalidBtn()"
-            (click)="onCreateOrUpdateCanal(canalVentaJV)"></button>
-    </ng-template>
+  <ng-template pTemplate="footer" class="foo">
+    <button
+      pButton
+      pRipple
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="hideDialog()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Save"
+      icon="pi pi-check"
+      class="p-button-text"
+      [disabled]="validOrInvalidBtn()"
+      (click)="onCreateOrUpdateCanal(canalVentaJV)"
+    ></button>
+  </ng-template>
 </p-dialog>
 
-<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+<p-dialog
+  [(visible)]="updatePriceBoxByChannel"
+  [style]="{ width: '400px', height: '350px' }"
+  [header]="'Actualizar precio casillero'"
+  [modal]="true"
+  styleClass="p-fluid"
+  [closable]="false"
+>
+  <ng-template pTemplate="content">
+    <div class="formgrid grid">
+      <div class="field col">
+        <label for="canalVentaDescripcion">Canal de venta</label>
+        <input
+          type="text"
+          pInputText
+          id="canalVentaDescripcion"
+          [(ngModel)]="canalToUpdate.canalVentaDescripcion"
+          disabled
+        />
+      </div>
+    </div>
+    <div class="formgrid grid">
+      <div class="field col">
+        <label for="canalVentaResponsable">Precio Casillero</label>
+        <input
+          type="text"
+          pInputText
+          id="canalVentaResponsable"
+          [(ngModel)]="canalToUpdate.precioCasillero"
+        />
+        <small class="p-error" *ngIf="!canalToUpdate.precioCasillero"
+          >campo requerido*</small
+        >
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer" class="foo">
+    <button
+      pButton
+      pRipple
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="hideDialogPriceBox()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Save"
+      icon="pi pi-check"
+      class="p-button-text"
+      [disabled]="validOrInvalidBtnUpdateBoxPrice()"
+      (click)="updatePriceBoxByChannelAction()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
