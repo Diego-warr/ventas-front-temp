@@ -214,6 +214,7 @@ export class DashboardComponent implements OnInit {
   codCasillero!: string;
   cantCasillero!: number;
   pesoPromedio!: number;
+  prefijoPeso = "KG.";
 
   precioCasilleroCanal;
   @ViewChild('dtOrdenes') dtOrdenes: Table | undefined;
@@ -1068,9 +1069,9 @@ export class DashboardComponent implements OnInit {
   }
 
   setEditOrdenPedido(orden: any) {
-    this.isTrustedBtnSaveOP = false;
-    this.loadData();
     this.openDialogToEdit();
+    this.loadData();
+    this.isTrustedBtnSaveOP = false;
     this.ordenPedidoId = orden.ordenPedidoId;
     this.tipoOrdenPedido = orden.tipoOrden;
     let serieToEdit = this.setSerieOpToEdit(orden.tipoOrden, orden.serie);
@@ -1095,9 +1096,8 @@ export class DashboardComponent implements OnInit {
     this.almacenSedeDestino = orden.almacenSedeDestinoId?.almacenSedeId!
       ? orden.almacenSedeDestinoId?.almacenSedeId!
       : '';
-    this.canalVenta = orden.canalventa?.canalVentaId!
-      ? orden.canalventa?.canalVentaId!
-      : 0;
+
+    this.canalVenta = orden.canalventa?.canalVentaId? orden.canalventa?.canalVentaId : 0;
     this.precioCasilleroCanal = this.canalVentaList.find(
       (item) => (item.canalVentaId = this.canalVenta)
     )?.precioCasillero;
@@ -1780,9 +1780,11 @@ export class DashboardComponent implements OnInit {
     this.getAllOrigen();
     this.getAllArticulosHabilitadosCustom();
     this.getAllPlanteles();
+    this.getAllCanalesVenta();
     this.vendedor = this.setVendedorLogeadoOnCreateOP(
       this.vendedorLogeado.emailVendedor
     )!!;
+
   }
 
   setVendedorLogeadoOnCreateOP(email: string) {
@@ -1873,6 +1875,10 @@ export class DashboardComponent implements OnInit {
     this.filterNameCliente = '';
     this.clientesCustomAUXList = [];
     this.searchClienteCustomDialog = false;
+
+    if(selectedClienteCustom.canalVentaId){
+      this.canalVenta = selectedClienteCustom.canalVentaId
+    }
   }
 
   onRowArticuloSelected(event) {
@@ -2236,27 +2242,15 @@ export class DashboardComponent implements OnInit {
   }
 
   onObsDisable() {
-    if (this.codigoDetalle == null || this.codigoDetalle == '') {
-      return true;
-    } else {
-      return false;
-    }
+    return this.codigoDetalle == null || this.codigoDetalle == '';
   }
 
   onCantidadDisable() {
-    if (this.codigoDetalle == null || this.codigoDetalle == '') {
-      return true;
-    } else {
-      return false;
-    }
+    return this.codigoDetalle == null || this.codigoDetalle == '';
   }
 
   onUnidadDisable() {
-    if (this.codigoDetalle == null || this.codigoDetalle == '') {
-      return true;
-    } else {
-      return false;
-    }
+    return this.codigoDetalle == null || this.codigoDetalle == '';
   }
 
   filterDataClientes(filterNameCliente: string) {
@@ -2334,6 +2328,8 @@ export class DashboardComponent implements OnInit {
   }
 
   onChangeCanalVenta(event) {
+
+    console.log("change_canal")
     this.precioCasilleroCanal = this.canalVentaList.find(
       (item) => item.canalVentaId == event.value
     )?.precioCasillero;

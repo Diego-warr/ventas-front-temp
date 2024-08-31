@@ -1108,7 +1108,7 @@
             </div>
             <div
               *ngIf="chkOperacionGratuita != true; else elseArtDescripcion"
-              class="col-11 md:col-7 lg:col-5"
+              class="col-11 md:col-7 lg:col-3"
             >
               <h5 class="titleFields">Articulo descripción</h5>
               <div class="p-inputgroup">
@@ -1124,7 +1124,7 @@
               </div>
             </div>
             <ng-template #elseArtDescripcion>
-              <div class="col-12 md:col-8 lg:col-5">
+              <div class="col-12 md:col-8 lg:col-3">
                 <h5 class="titleFields">Articulo descripción</h5>
                 <div class="p-inputgroup">
                   <input
@@ -1201,7 +1201,7 @@
               </div>
             </div>
             <ng-template #elseUM2>
-              <div class="col-12 md:col-3 lg:col-1 umd2">
+              <div class="col-12 md:col-3 lg:col-2 umd2">
                 <h5 class="titleFields">
                   (UM2) <b>{{ nombreCortoUM2 }}</b>
                 </h5>
@@ -1238,7 +1238,7 @@
               </div>
             </div>
             <ng-template #elseUM1>
-              <div class="col-12 md:col-3 lg:col-1">
+              <div class="col-12 md:col-3 lg:col-2">
                 <h5 class="titleFields">
                   (UM1) <b>{{ nombreCortoUM1 }}</b>
                 </h5>
@@ -1255,6 +1255,22 @@
                 </div>
               </div>
             </ng-template>
+            <div class="col-12 md:col-3 lg:col-2">
+              <h5 class="titleFields">
+                Peso aprox. (KGM)
+              </h5>
+              <div class="p-inputgroup">
+                <input
+                  type="number"
+                  pInputText
+                  style="background-color: rgb(228, 250, 255)"
+                  placeholder="Peso aproximado"
+                  [(ngModel)]="pesoPromedio"
+                  disabled = true
+
+                />
+              </div>
+            </div>
           </div>
           <div class="grid">
             <div class="col-12 md:col-12 lg:col-9">

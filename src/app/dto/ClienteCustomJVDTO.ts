@@ -22,4 +22,6 @@ export interface ClienteCustomJVDTO {
     cliRealRazonSocial: string;
 
     cliRealNombreComercial: string;
+
+    canalVentaId : number;
 }
