@@ -214,7 +214,7 @@ export class DashboardComponent implements OnInit {
   codCasillero!: string;
   cantCasillero!: number;
   pesoPromedio!: number;
-  prefijoPeso = "KG.";
+  prefijoPeso = 'KG.';
 
   precioCasilleroCanal;
   @ViewChild('dtOrdenes') dtOrdenes: Table | undefined;
@@ -1097,7 +1097,9 @@ export class DashboardComponent implements OnInit {
       ? orden.almacenSedeDestinoId?.almacenSedeId!
       : '';
 
-    this.canalVenta = orden.canalventa?.canalVentaId? orden.canalventa?.canalVentaId : 0;
+    this.canalVenta = orden.canalventa?.canalVentaId
+      ? orden.canalventa?.canalVentaId
+      : 0;
     this.precioCasilleroCanal = this.canalVentaList.find(
       (item) => (item.canalVentaId = this.canalVenta)
     )?.precioCasillero;
@@ -1784,7 +1786,6 @@ export class DashboardComponent implements OnInit {
     this.vendedor = this.setVendedorLogeadoOnCreateOP(
       this.vendedorLogeado.emailVendedor
     )!!;
-
   }
 
   setVendedorLogeadoOnCreateOP(email: string) {
@@ -1876,8 +1877,8 @@ export class DashboardComponent implements OnInit {
     this.clientesCustomAUXList = [];
     this.searchClienteCustomDialog = false;
 
-    if(selectedClienteCustom.canalVentaId){
-      this.canalVenta = selectedClienteCustom.canalVentaId
+    if (selectedClienteCustom.canalVentaId) {
+      this.canalVenta = selectedClienteCustom.canalVentaId;
     }
   }
 
@@ -2306,12 +2307,22 @@ export class DashboardComponent implements OnInit {
 
   subtotalItem(detalleItem) {
     let subtotal = 0;
-    if (detalleItem.cantidad) {
-      subtotal = detalleItem.cantidad * detalleItem.precio;
-    } else {
+    if (detalleItem.articuloDescripcion.includes('casillero')) {
       subtotal =
-        detalleItem.unidades * detalleItem.precio * detalleItem.pesoPromedio;
+        ((detalleItem.unidades * detalleItem.cantCasillero) / 120) *
+        this.precioCasilleroCanal;
+    } else if (detalleItem.unidades) {
+      let cant = detalleItem.unidades * detalleItem.pesoPromedio;
+      subtotal = detalleItem.unidades * detalleItem.precio * cant;
+    } else {
+      subtotal = detalleItem.cantidad * detalleItem.precio;
     }
+    // if (detalleItem.cantidad) {
+    //   subtotal = detalleItem.cantidad * detalleItem.precio;
+    // } else {
+    //   subtotal =
+    //     detalleItem.unidades * detalleItem.precio * detalleItem.pesoPromedio;
+    // }
     return subtotal.toFixed(2);
   }
 
@@ -2320,16 +2331,25 @@ export class DashboardComponent implements OnInit {
   totalAmountOrder() {
     let total: number = 0;
     if (this.detalleOPItemsList.length > 0) {
-      this.detalleOPItemsList.forEach((order) => {
-        total = total + order.unidades * order.precio * order.pesoPromedio;
+      this.detalleOPItemsList.forEach((order: any) => {
+        if (order.articuloDescripcion.includes('casillero')) {
+          total = total +
+            ((order.unidades * order.cantCasillero) / 120) *
+            this.precioCasilleroCanal;
+        } else if (order.unidades) {
+          let cant =total + order.unidades * order.pesoPromedio;
+          total = order.unidades * order.precio * cant;
+        } else {
+          total = total + order.cantidad * order.precio;
+        }
+        // total = total + order.unidades * order.precio * order.pesoPromedio;
       });
     }
     return total.toFixed(2);
   }
 
   onChangeCanalVenta(event) {
-
-    console.log("change_canal")
+    console.log('change_canal');
     this.precioCasilleroCanal = this.canalVentaList.find(
       (item) => item.canalVentaId == event.value
     )?.precioCasillero;
@@ -2337,7 +2357,7 @@ export class DashboardComponent implements OnInit {
 
   detalleCantidad(detalleItem) {
     if (detalleItem.articuloDescripcion.toLowerCase().includes('casillero')) {
-      return (detalleItem.cantidad / 120).toFixed(2);
+      return (detalleItem.unidades * detalleItem.cantCasillero) / 120;
     } else return detalleItem.cantidad;
   }
 }
