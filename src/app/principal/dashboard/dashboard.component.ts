@@ -2313,7 +2313,7 @@ export class DashboardComponent implements OnInit {
         this.precioCasilleroCanal;
     } else if (detalleItem.unidades) {
       let cant = detalleItem.unidades * detalleItem.pesoPromedio;
-      subtotal = detalleItem.unidades * detalleItem.precio * cant;
+      subtotal = detalleItem.precio * cant;
     } else {
       subtotal = detalleItem.cantidad * detalleItem.precio;
     }
