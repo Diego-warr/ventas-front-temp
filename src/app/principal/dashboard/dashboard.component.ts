@@ -2337,8 +2337,8 @@ export class DashboardComponent implements OnInit {
             ((order.unidades * order.cantCasillero) / 120) *
             this.precioCasilleroCanal;
         } else if (order.unidades) {
-          let cant =total + order.unidades * order.pesoPromedio;
-          total = order.unidades * order.precio * cant;
+          let cant = order.unidades * order.pesoPromedio;
+          total =total + order.precio * cant;
         } else {
           total = total + order.cantidad * order.precio;
         }
