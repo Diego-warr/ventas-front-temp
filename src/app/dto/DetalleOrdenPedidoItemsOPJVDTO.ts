@@ -22,4 +22,5 @@ export interface DetalleOrdenPedidoItemsOPJVDTO {
   operacionGratuita: string | null;
 
   pesoPromedio: number;
+  cantCasillero?;
 }

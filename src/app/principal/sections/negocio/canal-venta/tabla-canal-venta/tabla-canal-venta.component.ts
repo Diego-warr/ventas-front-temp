@@ -255,7 +255,6 @@ export class CanalVentaComponent implements OnInit {
   }
 
   editPriceBox(canal) {
-    // debugger;
     this.canalToUpdate = canal;
     this.updatePriceBoxByChannel = true;
   }

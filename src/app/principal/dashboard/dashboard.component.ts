@@ -216,7 +216,9 @@ export class DashboardComponent implements OnInit {
   pesoPromedio!: number;
   prefijoPeso = 'KG.';
 
-  precioCasilleroCanal;
+  precioCasilleroCanal: any = 0;
+  cantidadHuevo = 0;
+  cantidadCasilleroGlobal = 0;
   @ViewChild('dtOrdenes') dtOrdenes: Table | undefined;
   @ViewChild('dateIni') calendarIni: Calendar | undefined;
   @ViewChild('dateFin') calendarFin: Calendar | undefined;
@@ -1101,7 +1103,7 @@ export class DashboardComponent implements OnInit {
       ? orden.canalventa?.canalVentaId
       : 0;
     this.precioCasilleroCanal = this.canalVentaList.find(
-      (item) => (item.canalVentaId = this.canalVenta)
+      (item) => item.canalVentaId == this.canalVenta
     )?.precioCasillero;
     this.origen = orden.origen;
     this.plantel = orden.plantelId;
@@ -1879,12 +1881,16 @@ export class DashboardComponent implements OnInit {
 
     if (selectedClienteCustom.canalVentaId) {
       this.canalVenta = selectedClienteCustom.canalVentaId;
+
+      this.precioCasilleroCanal = this.canalVentaList.find(
+        (item) => item.canalVentaId == selectedClienteCustom.canalVentaId
+      )?.precioCasillero;
     }
   }
 
   onRowArticuloSelected(event) {
     let selectedArticuloCustom = event.data;
-
+    this.cantidadCasilleroGlobal = selectedArticuloCustom.cantCasillero;
     this.articuloService
       .getById(selectedArticuloCustom.articuloId)
       .subscribe((response: any) => {
@@ -1952,7 +1958,6 @@ export class DashboardComponent implements OnInit {
     let canal = this.canalVentaList.find(
       (cv) => cv.canalVentaId == this.canalVenta
     );
-
     if (
       top?.id == 'OP' &&
       canal?.canalVentaDescripcion == 'RETAIL' &&
@@ -2043,6 +2048,7 @@ export class DashboardComponent implements OnInit {
         detalleOP.observacion = this.observacionDetalle;
       }
       detalleOP.pesoPromedio = this.pesoPromedio ? this.pesoPromedio : 0;
+      this.cantidadHuevo = this.um2Detalle ? this.um2Detalle : 0.0;
       this.detalleOPItemsList.push(detalleOP);
       if (this.codCasillero) {
         this.articuloService
@@ -2068,7 +2074,8 @@ export class DashboardComponent implements OnInit {
             detalleOP.articuloDescripcion = response.data.descripcionArticulo;
             let secuencia = this.setSecuenciaDetalle();
             detalleOP.secuencia = secuencia;
-            detalleOP.cantidad = this.cantCasillero;
+            detalleOP.cantidad =
+              (this.cantidadHuevo * this.cantCasillero) / 120;
             detalleOP.unidades = 0.0;
             detalleOP.precio = canal?.precioCasillero
               ? canal.precioCasillero
@@ -2306,45 +2313,71 @@ export class DashboardComponent implements OnInit {
   }
 
   subtotalItem(detalleItem) {
-    let subtotal = 0;
-    if (detalleItem.articuloDescripcion.includes('casillero')) {
-      subtotal =
-        ((detalleItem.unidades * detalleItem.cantCasillero) / 120) *
-        this.precioCasilleroCanal;
-    } else if (detalleItem.unidades) {
-      let cant = detalleItem.unidades * detalleItem.pesoPromedio;
-      subtotal = detalleItem.precio * cant;
-    } else {
-      subtotal = detalleItem.cantidad * detalleItem.precio;
+    // let subtotal = 0;
+
+    if (detalleItem.articuloDescripcion.includes('CASILLERO')) {
+      const unidades =
+        this.cantidadHuevo > 0
+          ? this.cantidadHuevo
+          : this.detalleOPItemsList.find((item) => item.unidades)?.unidades ??
+            0;
+
+      const casillero =
+        this.cantidadCasilleroGlobal > 0
+          ? this.cantidadCasilleroGlobal
+          : this.detalleOPItemsList.find((item) => item.cantCasillero)
+              ?.cantCasillero ?? 0;
+      return (
+        ((unidades * casillero) / 120) *
+        this.precioCasilleroCanal
+      ).toFixed(2);
     }
-    // if (detalleItem.cantidad) {
-    //   subtotal = detalleItem.cantidad * detalleItem.precio;
-    // } else {
-    //   subtotal =
-    //     detalleItem.unidades * detalleItem.precio * detalleItem.pesoPromedio;
-    // }
-    return subtotal.toFixed(2);
+    if (detalleItem.cantidad) {
+      return (detalleItem.cantidad * detalleItem.precio).toFixed(2);
+    } else {
+      let cant = detalleItem.unidades * detalleItem.pesoPromedio;
+      return (detalleItem.precio * cant).toFixed(2);
+    }
   }
 
   onChangeIncluyeCasillero(event) {}
 
   totalAmountOrder() {
     let total: number = 0;
+
     if (this.detalleOPItemsList.length > 0) {
       this.detalleOPItemsList.forEach((order: any) => {
-        if (order.articuloDescripcion.includes('casillero')) {
-          total = total +
-            ((order.unidades * order.cantCasillero) / 120) *
-            this.precioCasilleroCanal;
-        } else if (order.unidades) {
-          let cant = order.unidades * order.pesoPromedio;
-          total =total + order.precio * cant;
+        if (order.articuloDescripcion.includes('CASILLERO')) {
+          const unidades =
+            this.cantidadHuevo > 0
+              ? this.cantidadHuevo
+              : this.detalleOPItemsList.find((item) => item.unidades)
+                  ?.unidades ?? 0;
+
+          const casillero =
+            this.cantidadCasilleroGlobal > 0
+              ? this.cantidadCasilleroGlobal
+              : this.detalleOPItemsList.find((item) => item.cantCasillero)
+                  ?.cantCasillero ?? 0;
+
+          total =
+            total +
+            parseFloat(
+              (
+                ((unidades * casillero) / 120) *
+                this.precioCasilleroCanal
+              ).toFixed(2)
+            );
+        } else if (order.cantidad) {
+          total =
+            total + parseFloat((order.cantidad * order.precio).toFixed(2));
         } else {
-          total = total + order.cantidad * order.precio;
+          let cant = order.unidades * order.pesoPromedio;
+          total = total + parseFloat((order.precio * cant).toFixed(2));
         }
-        // total = total + order.unidades * order.precio * order.pesoPromedio;
       });
     }
+
     return total.toFixed(2);
   }
 
@@ -2356,8 +2389,26 @@ export class DashboardComponent implements OnInit {
   }
 
   detalleCantidad(detalleItem) {
-    if (detalleItem.articuloDescripcion.toLowerCase().includes('casillero')) {
-      return (detalleItem.unidades * detalleItem.cantCasillero) / 120;
-    } else return detalleItem.cantidad;
+    if (detalleItem.articuloDescripcion.toLowerCase().includes('CASILLERO')) {
+      const unidades =
+        this.cantidadHuevo > 0
+          ? this.cantidadHuevo
+          : this.detalleOPItemsList.find((item) => item.unidades)?.unidades ??
+            0;
+
+      const casillero =
+        this.cantidadCasilleroGlobal > 0
+          ? this.cantidadCasilleroGlobal
+          : this.detalleOPItemsList.find((item) => item.cantCasillero)
+              ?.cantCasillero ?? 0;
+
+      return ((unidades * casillero) / 120).toFixed(2);
+    }
+
+    if (detalleItem.cantidad) {
+      return detalleItem.cantidad;
+    } else {
+      return (detalleItem.unidades ?? 0) * (detalleItem.pesoPromedio ?? 0);
+    }
   }
 }
