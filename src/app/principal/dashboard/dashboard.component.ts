@@ -219,6 +219,7 @@ export class DashboardComponent implements OnInit {
   precioCasilleroCanal: any = 0;
   cantidadHuevo = 0;
   cantidadCasilleroGlobal = 0;
+  cantidadHuevoGLobal = 0;
   @ViewChild('dtOrdenes') dtOrdenes: Table | undefined;
   @ViewChild('dateIni') calendarIni: Calendar | undefined;
   @ViewChild('dateFin') calendarFin: Calendar | undefined;
@@ -1890,7 +1891,14 @@ export class DashboardComponent implements OnInit {
 
   onRowArticuloSelected(event) {
     let selectedArticuloCustom = event.data;
-    this.cantidadCasilleroGlobal = selectedArticuloCustom.cantCasillero;
+
+    if (
+      selectedArticuloCustom.cantCasillero &&
+      selectedArticuloCustom.cantCasillero > 0
+    ) {
+      this.cantidadCasilleroGlobal = selectedArticuloCustom.cantCasillero;
+    }
+
     this.articuloService
       .getById(selectedArticuloCustom.articuloId)
       .subscribe((response: any) => {
@@ -2049,6 +2057,13 @@ export class DashboardComponent implements OnInit {
       }
       detalleOP.pesoPromedio = this.pesoPromedio ? this.pesoPromedio : 0;
       this.cantidadHuevo = this.um2Detalle ? this.um2Detalle : 0.0;
+
+      this.cantidadHuevoGLobal = this.cantCasillero
+        ? this.um2Detalle
+          ? this.um2Detalle
+          : 0.0
+        : 0;
+
       this.detalleOPItemsList.push(detalleOP);
       if (this.codCasillero) {
         this.articuloService
@@ -2317,8 +2332,8 @@ export class DashboardComponent implements OnInit {
 
     if (detalleItem.articuloDescripcion.includes('CASILLERO')) {
       const unidades =
-        this.cantidadHuevo > 0
-          ? this.cantidadHuevo
+        this.cantidadHuevoGLobal > 0
+          ? this.cantidadHuevoGLobal
           : this.detalleOPItemsList.find((item) => item.unidades)?.unidades ??
             0;
 
@@ -2327,6 +2342,7 @@ export class DashboardComponent implements OnInit {
           ? this.cantidadCasilleroGlobal
           : this.detalleOPItemsList.find((item) => item.cantCasillero)
               ?.cantCasillero ?? 0;
+
       return (
         ((unidades * casillero) / 120) *
         this.precioCasilleroCanal
@@ -2349,8 +2365,8 @@ export class DashboardComponent implements OnInit {
       this.detalleOPItemsList.forEach((order: any) => {
         if (order.articuloDescripcion.includes('CASILLERO')) {
           const unidades =
-            this.cantidadHuevo > 0
-              ? this.cantidadHuevo
+            this.cantidadHuevoGLobal > 0
+              ? this.cantidadHuevoGLobal
               : this.detalleOPItemsList.find((item) => item.unidades)
                   ?.unidades ?? 0;
 
@@ -2391,8 +2407,8 @@ export class DashboardComponent implements OnInit {
   detalleCantidad(detalleItem) {
     if (detalleItem.articuloDescripcion.toLowerCase().includes('CASILLERO')) {
       const unidades =
-        this.cantidadHuevo > 0
-          ? this.cantidadHuevo
+        this.cantidadHuevoGLobal > 0
+          ? this.cantidadHuevoGLobal
           : this.detalleOPItemsList.find((item) => item.unidades)?.unidades ??
             0;
 
