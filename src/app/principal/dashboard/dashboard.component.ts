@@ -2398,7 +2398,6 @@ export class DashboardComponent implements OnInit {
   }
 
   onChangeCanalVenta(event) {
-    console.log('change_canal');
     this.precioCasilleroCanal = this.canalVentaList.find(
       (item) => item.canalVentaId == event.value
     )?.precioCasillero;
@@ -2418,13 +2417,18 @@ export class DashboardComponent implements OnInit {
           : this.detalleOPItemsList.find((item) => item.cantCasillero)
               ?.cantCasillero ?? 0;
 
-      return ((unidades * casillero) / 120).toFixed(2);
+      return this.chkIncluyeCasillero
+        ? 0
+        : ((unidades * casillero) / 120).toFixed(2);
     }
 
     if (detalleItem.cantidad) {
-      return detalleItem.cantidad;
+      return detalleItem.cantidad.toFixed(2);
     } else {
-      return (detalleItem.unidades ?? 0) * (detalleItem.pesoPromedio ?? 0);
+      return (
+        (detalleItem.unidades ?? 0).toFixed(2) *
+        (detalleItem.pesoPromedio ?? 0).toFixed(2)
+      );
     }
   }
 }
