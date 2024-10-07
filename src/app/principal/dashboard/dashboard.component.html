@@ -1352,7 +1352,7 @@
               {{
                 subtotalItem(detalleItem)
                   ? simboloMoneda + subtotalItem(detalleItem)
-                  : ""
+                  : simboloMoneda + "0"
               }}
             </td>
             <td>{{ detalleItem.observacion }}</td>
@@ -1384,7 +1384,11 @@
             <td colspan="7"></td>
             <td>Total</td>
             <td>
-              {{ totalAmountOrder() ? simboloMoneda + totalAmountOrder() : "" }}
+              {{
+                totalAmountOrder
+                  ? simboloMoneda + totalAmountOrder
+                  : simboloMoneda + "0"
+              }}
             </td>
             <td colspan="3"></td>
           </tr>

@@ -229,7 +229,7 @@ export class DashboardComponent implements OnInit {
   @ViewChild('paginador', { static: false }) paginador: Paginator | undefined;
   downloadLink: HTMLAnchorElement | undefined;
   ref: DynamicDialogRef | undefined;
-
+  totalAmountOrderQty: any = 0;
   constructor(
     private dataUserToken: DataUserToken,
     private ordenPedidoService: OrdenPedidoService,
@@ -1948,6 +1948,7 @@ export class DashboardComponent implements OnInit {
       this.articuloIdSelected,
       this.canalVenta
     );
+    // this.totalAmountOrder()
     //this.setDetalles();
   }
 
@@ -2342,11 +2343,11 @@ export class DashboardComponent implements OnInit {
           ? this.cantidadCasilleroGlobal
           : this.detalleOPItemsList.find((item) => item.cantCasillero)
               ?.cantCasillero ?? 0;
-
-      return (
-        ((unidades * casillero) / 120) *
-        this.precioCasilleroCanal
-      ).toFixed(2);
+      return this.chkIncluyeCasillero
+        ? 0
+        : (((unidades * casillero) / 120) * this.precioCasilleroCanal).toFixed(
+            2
+          );
     }
     if (detalleItem.cantidad) {
       return (detalleItem.cantidad * detalleItem.precio).toFixed(2);
@@ -2356,9 +2357,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  onChangeIncluyeCasillero(event) {}
+  onChangeIncluyeCasillero(event) {
+    // this.totalAmountOrder();
+  }
 
-  totalAmountOrder() {
+  get totalAmountOrder() {
     let total: number = 0;
 
     if (this.detalleOPItemsList.length > 0) {
@@ -2375,15 +2378,15 @@ export class DashboardComponent implements OnInit {
               ? this.cantidadCasilleroGlobal
               : this.detalleOPItemsList.find((item) => item.cantCasillero)
                   ?.cantCasillero ?? 0;
-
-          total =
-            total +
-            parseFloat(
-              (
-                ((unidades * casillero) / 120) *
-                this.precioCasilleroCanal
-              ).toFixed(2)
-            );
+          total = this.chkIncluyeCasillero
+            ? total + 0
+            : total +
+              parseFloat(
+                (
+                  ((unidades * casillero) / 120) *
+                  this.precioCasilleroCanal
+                ).toFixed(2)
+              );
         } else if (order.cantidad) {
           total =
             total + parseFloat((order.cantidad * order.precio).toFixed(2));
@@ -2393,7 +2396,7 @@ export class DashboardComponent implements OnInit {
         }
       });
     }
-
+    this.totalAmountOrderQty = total.toFixed(2);
     return total.toFixed(2);
   }
 
@@ -2423,7 +2426,7 @@ export class DashboardComponent implements OnInit {
     }
 
     if (detalleItem.cantidad) {
-      return detalleItem.cantidad.toFixed(2);
+      return detalleItem.cantidad;
     } else {
       return (
         (detalleItem.unidades ?? 0).toFixed(2) *
