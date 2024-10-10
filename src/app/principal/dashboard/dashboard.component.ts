@@ -1668,7 +1668,6 @@ export class DashboardComponent implements OnInit {
   }
 
   onSelectOperacionGratuita(e: any) {
-    //console.log("EVENT OP", e)
   }
 
   onChangeOperacionGratuitaChk(e: any) {
