@@ -2425,7 +2425,7 @@ export class DashboardComponent implements OnInit {
     }
 
     if (detalleItem.cantidad) {
-      return detalleItem.cantidad;
+      return detalleItem.cantidad.toFixed(2)
     } else {
       return (
         (detalleItem.unidades ?? 0).toFixed(2) *
